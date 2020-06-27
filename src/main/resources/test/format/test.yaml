@@ -1,0 +1,34 @@
+purpose: Test yaml format analysis
+testDetails: Multiple attribute values and multiple arrays
+arrayOne:
+  - item: array-one-1
+  - item: array-one-2
+  - item: array-one-3
+arrayTwo:
+  - itemID: 1
+    itemName: array-two-1
+  - itemID: 2
+    itemName: array-two-2
+  - itemID: 3
+    itemName: array-two-3
+arrayThree:
+  - item:
+      - id: 1
+        name: array-three-1
+      - id: 2
+        name: array-three-2
+  - item:
+      - id: 3
+        name: array-three-3
+      - id: 4
+        name: array-three-4
+  - other: arrayThree some value
+SearchExample:
+  first: //arrayOne
+  second: //arrayTwo/itemName
+  third: //arrayThree/item/name
+  fourth: //arrayOne/item
+  fifth: //arrayTwo
+  sixth: //purpose
+  seventh: //SearchExample
+  eighth: //arrayThree/item
