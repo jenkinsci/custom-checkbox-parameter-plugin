@@ -1,4 +1,4 @@
-package com.bluersw.format;
+package com.bluersw.analyze;
 
 /**
  * 配置文件操作实现工厂

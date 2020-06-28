@@ -1,4 +1,4 @@
-package com.bluersw.format;
+package com.bluersw.analyze;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

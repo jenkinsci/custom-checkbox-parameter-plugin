@@ -1,4 +1,4 @@
-package com.bluersw.format;
+package com.bluersw.analyze;
 
 import java.io.InputStream;
 import java.util.List;
@@ -13,7 +13,7 @@ public class YamlFormatTests {
 	public void test() throws Exception{
 		InputStream inputStream = this.getClass()
 				.getClassLoader()
-				.getResourceAsStream("test/format/test.yaml");
+				.getResourceAsStream("test/analyze/examples.yaml");
 
 		System.out.println("//arrayOne:");
 		YamlFormat format = new YamlFormat(inputStream);

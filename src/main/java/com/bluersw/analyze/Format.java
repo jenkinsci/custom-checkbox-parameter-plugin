@@ -1,7 +1,8 @@
-package com.bluersw.format;
+package com.bluersw.analyze;
 
 /**
  * 文档格式定义
+ * @author sunweisheng
  */
 public enum Format {
 	/**
