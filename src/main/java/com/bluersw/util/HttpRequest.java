@@ -1,11 +1,13 @@
 package com.bluersw.util;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.security.SecureRandom;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 
+import com.bluersw.source.DataSource;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -19,7 +21,7 @@ import org.apache.http.util.EntityUtils;
  * @author sunweisheng
  * 请求HTTP和HTTPS协议获得字符串响应结果
  */
-public class HttpRequest {
+public class HttpRequest implements DataSource {
 
 	private final String uri;
 	private String statusLine;
@@ -97,19 +99,19 @@ public class HttpRequest {
 	 * @return GET请求字符串结果
 	 * @throws Exception Exception异常
 	 */
+	@Override
 	public String get() throws Exception {
-		String result = "";
 		try (final CloseableHttpClient client = this.createClientByProtocol()) {
 			HttpGet httpGet = new HttpGet(this.uri);
 			try (final CloseableHttpResponse response = client.execute(httpGet)) {
 				this.statusCode = response.getStatusLine().getStatusCode();
 				this.statusLine = response.getStatusLine().toString();
 				if (this.statusCode == HttpStatus.SC_OK) {
-					result = EntityUtils.toString(response.getEntity(), Charset.defaultCharset());
+					return EntityUtils.toString(response.getEntity(), Charset.defaultCharset());
+				}else {
+					throw new IOException("HTTP or HTTPS Get data failed,HttpStatus:" + this.statusLine);
 				}
 			}
 		}
-
-		return result;
 	}
 }
