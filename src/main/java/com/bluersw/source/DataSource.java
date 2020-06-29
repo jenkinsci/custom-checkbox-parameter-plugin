@@ -12,4 +12,16 @@ public interface DataSource {
 	 * @throws Exception 与IO异常相关
 	 */
 	String get() throws Exception;
+
+	/**
+	 * 获取执行结果状态的字符串说明
+	 * @return 执行结果状态的字符串说明
+	 */
+	String getStatusLine();
+
+	/**
+	 * 获取执行结果状态码
+	 * @return 执行结果状态码
+	 */
+	int getStatusCode();
 }

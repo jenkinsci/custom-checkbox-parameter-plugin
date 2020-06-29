@@ -1,7 +1,5 @@
 package com.bluersw.source;
 
-import com.bluersw.util.HttpRequest;
-
 /**
  * 数据源工厂类
  * @author sunweisheng
@@ -17,8 +15,9 @@ public class DataSourceFactory {
 	public static DataSource createDataSource(Protocol protocol, String uri) {
 		if (protocol == Protocol.HTTP) {
 			return new HttpRequest(uri);
-		}
-		else {
+		}else if(protocol == Protocol.LOCAL){
+			return new FileRead(uri);
+		}else {
 			throw new IllegalArgumentException("Did not implement this protocol.");
 		}
 	}
@@ -33,8 +32,9 @@ public class DataSourceFactory {
 	public static DataSource createDataSource(Protocol protocol, String uri, String protocolVersion) {
 		if (protocol == Protocol.HTTP) {
 			return new HttpRequest(uri, protocolVersion);
-		}
-		else {
+		}else if(protocol == Protocol.LOCAL){
+			return new FileRead(uri);
+		}else {
 			throw new IllegalArgumentException("Did not implement this protocol.");
 		}
 	}

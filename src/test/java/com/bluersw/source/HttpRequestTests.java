@@ -1,4 +1,4 @@
-package com.bluersw.util;
+package com.bluersw.source;
 
 import org.junit.Test;
 
@@ -8,7 +8,7 @@ public class HttpRequestTests {
 
 	@Test
 	public void httpGet()throws Exception {
-		HttpRequest request = new HttpRequest("http://hc.apache.org/");
+		DataSource request = DataSourceFactory.createDataSource(Protocol.HTTP,"http://hc.apache.org/");
 		assertNotNull(request.get());
 		assertEquals(request.getStatusLine(),"HTTP/1.1 200 OK");
 		assertEquals(request.getStatusCode(),200);

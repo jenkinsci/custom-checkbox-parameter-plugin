@@ -1,4 +1,4 @@
-package com.bluersw.util;
+package com.bluersw.source;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -7,7 +7,6 @@ import java.security.SecureRandom;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 
-import com.bluersw.source.DataSource;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -51,6 +50,7 @@ public class HttpRequest implements DataSource {
 	 * 获得请求结果HTTP状态的字符串说明
 	 * @return HTTP状态的字符串说明
 	 */
+	@Override
 	public String getStatusLine() {
 		return statusLine;
 	}
@@ -59,6 +59,7 @@ public class HttpRequest implements DataSource {
 	 * 获得请求结果HTTP状态码
 	 * @return HTTP状态码
 	 */
+	@Override
 	public int getStatusCode() {
 		return statusCode;
 	}

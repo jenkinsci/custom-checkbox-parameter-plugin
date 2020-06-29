@@ -9,5 +9,9 @@ public enum Protocol {
 	/**
 	 * 通过HTTP协议（含HTTPS协议）获取数据
 	 */
-	HTTP
+	HTTP,
+	/**
+	 * 通过本地文件获取数据
+	 */
+	LOCAL
 }

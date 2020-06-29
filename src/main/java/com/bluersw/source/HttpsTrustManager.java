@@ -1,4 +1,4 @@
-package com.bluersw.util;
+package com.bluersw.source;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
