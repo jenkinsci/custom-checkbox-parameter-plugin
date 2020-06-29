@@ -7,15 +7,15 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class YamlFormatTests {
+public class JsonFormatTests {
 
 	@Test
 	public void test() throws Exception{
 		InputStream inputStream = this.getClass()
 				.getClassLoader()
-				.getResourceAsStream("test/analyze/examples.yaml");
+				.getResourceAsStream("test/analyze/examples.json");
 
-		Configuration format = ConfigurationFactory.createConfiguration(Format.YAML,inputStream);
+		Configuration format = ConfigurationFactory.createConfiguration(Format.JSON,inputStream);
 
 		System.out.println("//arrayOne:");
 		List<String> list = format.getValueListBySearch("//arrayOne");
@@ -57,4 +57,5 @@ public class YamlFormatTests {
 		assertEquals(list.size(),8);
 		System.out.println(list);
 	}
+
 }

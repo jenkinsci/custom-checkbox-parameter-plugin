@@ -8,5 +8,9 @@ public enum Format {
 	/**
 	 * YAML文档格式
 	 */
-	YAML
+	YAML,
+	/**
+	 * JSON文档格式
+	 */
+	JSON
 }
