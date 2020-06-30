@@ -1,5 +1,12 @@
 purpose: Test yaml format analysis
 testDetails: Multiple attribute values and multiple arrays
+CheckboxParameter:
+  - key: key-1
+    value: value-1
+  - key: key-2
+    value: value-2
+  - key: key-3
+    value: value-3
 arrayOne:
   - item: array-one-1
   - item: array-one-2

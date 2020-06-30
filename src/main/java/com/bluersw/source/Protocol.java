@@ -7,9 +7,17 @@ package com.bluersw.source;
 
 public enum Protocol {
 	/**
-	 * 通过HTTP协议（含HTTPS协议）获取数据
+	 * 通过HTTP协议获取数据
 	 */
 	HTTP,
+	/**
+	 * 通过HTTPS协议获取数据
+	 */
+	HTTPS,
+	/**
+	 * 通过用户输入获得数据
+	 */
+	INPUT,
 	/**
 	 * 通过本地文件获取数据
 	 */

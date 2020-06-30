@@ -14,6 +14,7 @@ import hudson.Extension;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -42,11 +43,11 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	private String tlsVersion;
 
 	@DataBoundConstructor
-	public CheckboxParameterDefinition(String name, String protocol, String format, String submitContent, String uri, String searchCommand, String displaySearch, String valueSearch, String tlsVersion) {
+	public CheckboxParameterDefinition(String name, Protocol protocol, Format format, String submitContent, String uri, String searchCommand, String displaySearch, String valueSearch, String tlsVersion) {
 		super(name, DESCRIPTION);
 		this.uuid = UUID.randomUUID();
-		this.protocol = Protocol.valueOf(protocol);
-		this.format = Format.valueOf(format);
+		this.protocol = protocol;
+		this.format = format;
 		this.submitContent = submitContent;
 		this.uri = uri;
 		this.searchCommand = searchCommand;
@@ -85,15 +86,15 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	@DataBoundSetter
 	public void setSubmitContent(String submitContent){this.submitContent = submitContent;}
 
-	public String getFormat(){return this.format.name();}
+	public Format getFormat(){return this.format;}
 
 	@DataBoundSetter
-	public void setFormat(String format){this.format = Format.valueOf(format);}
+	public void setFormat(Format format){this.format = format;}
 
-	public String getProtocol(){return this.protocol.name();}
+	public Protocol getProtocol(){return this.protocol;}
 
 	@DataBoundSetter
-	public void setProtocol(String protocol){this.protocol = Protocol.valueOf(protocol);}
+	public void setProtocol(Protocol protocol){this.protocol = protocol;}
 
 	@CheckForNull
 	@Override
@@ -116,6 +117,11 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		else {
 			return -1;
 		}
+	}
+
+	public String getConfigDivId(){return this.uuid.toString();}
+	public String getDivId() {
+		return String.format("%s-%s", getName().replaceAll("\\W", "_"), this.uuid);
 	}
 
 	@Symbol("checkboxParameter")
@@ -141,8 +147,8 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		 */
 		public ParameterDefinition newInstance(@Nullable StaplerRequest req, @NonNull JSONObject formData) {
 			String name = formData.getString("name");
-			String protocol = formData.getString("protocol");
-			String format = formData.getString("format");
+			Protocol protocol = Protocol.valueOf(formData.getString("protocol"));
+			Format format = Format.valueOf(formData.getString("format"));
 			String submitContent = formData.getString("submitContent");
 			String uri = formData.getString("uri");
 			String searchCommand = formData.getString("searchCommand");
@@ -151,6 +157,15 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			String tlsVersion = formData.getString("tlsVersion");
 			return new CheckboxParameterDefinition(name, protocol,format,submitContent,uri,searchCommand,displaySearch,valueSearch,tlsVersion);
 		}
+
+		public ListBoxModel doFillProtocolListItems(){
+			ListBoxModel list = new ListBoxModel();
+			for(Protocol protocol : Protocol.values()){
+				list.add(protocol.name());
+			}
+			return list;
+		}
+
 	}
 
 

@@ -13,7 +13,7 @@ public class DataSourceFactory {
 	 * @return 数据源接口对象
 	 */
 	public static DataSource createDataSource(Protocol protocol, String uri) {
-		if (protocol == Protocol.HTTP) {
+		if (protocol == Protocol.HTTP || protocol == Protocol.HTTPS) {
 			return new HttpRequest(uri);
 		}else if(protocol == Protocol.LOCAL){
 			return new FileRead(uri);
@@ -30,7 +30,7 @@ public class DataSourceFactory {
 	 * @return 数据源接口对象
 	 */
 	public static DataSource createDataSource(Protocol protocol, String uri, String protocolVersion) {
-		if (protocol == Protocol.HTTP) {
+		if (protocol == Protocol.HTTP || protocol == Protocol.HTTPS) {
 			return new HttpRequest(uri, protocolVersion);
 		}else if(protocol == Protocol.LOCAL){
 			return new FileRead(uri);
