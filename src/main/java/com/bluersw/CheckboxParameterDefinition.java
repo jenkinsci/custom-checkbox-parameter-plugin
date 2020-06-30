@@ -37,64 +37,98 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	private Format format;
 	private String submitContent;
 	private String uri;
-	private String searchCommand;
-	private String displaySearch;
-	private String valueSearch;
+	private String displayNodePath;
+	private String valueNodePath;
 	private String tlsVersion;
+	private boolean useInput;
 
 	@DataBoundConstructor
-	public CheckboxParameterDefinition(String name, Protocol protocol, Format format, String submitContent, String uri, String searchCommand, String displaySearch, String valueSearch, String tlsVersion) {
+	public CheckboxParameterDefinition(String name, Protocol protocol, Format format,
+			String submitContent, String uri, String displayNodePath,
+			String valueNodePath, String tlsVersion, boolean useInput) {
 		super(name, DESCRIPTION);
 		this.uuid = UUID.randomUUID();
 		this.protocol = protocol;
 		this.format = format;
 		this.submitContent = submitContent;
 		this.uri = uri;
-		this.searchCommand = searchCommand;
-		this.displaySearch = displaySearch;
-		this.valueSearch = valueSearch;
+		this.displayNodePath = displayNodePath;
+		this.valueNodePath = valueNodePath;
+		this.tlsVersion = tlsVersion;
+		this.useInput = useInput;
+	}
+
+	public boolean getUseInput() {
+		return this.useInput;
+	}
+
+	@DataBoundSetter
+	public void setUseInput(boolean useInput) {
+		this.useInput = useInput;
+	}
+
+	public String getDisplayNodePath() {
+		return this.displayNodePath;
+	}
+
+	@DataBoundSetter
+	public void setDisplayNodePath(String displayNodePath) {
+		this.displayNodePath = displayNodePath;
+	}
+
+	public String getValueNodePath() {
+		return this.valueNodePath;
+	}
+
+	@DataBoundSetter
+	public void setValueNodePath(String valueNodePath) {
+		this.valueNodePath = valueNodePath;
+	}
+
+	public String getTlsVersion() {
+		return this.tlsVersion;
+	}
+
+	@DataBoundSetter
+	public void setTlsVersion(String tlsVersion) {
 		this.tlsVersion = tlsVersion;
 	}
 
-	public String getSearchCommand(){return this.searchCommand;}
+	public String getUri() {
+		return this.uri;
+	}
 
 	@DataBoundSetter
-	public void setSearchCommand(String searchCommand){this.searchCommand = searchCommand;}
+	public void setUri(String submitContent) {
+		this.uri = uri;
+	}
 
-	public String getDisplaySearch(){return this.displaySearch;}
-
-	@DataBoundSetter
-	public void setDisplaySearch(String displaySearch){this.displaySearch = displaySearch;}
-
-	public String getValueSearch(){return this.valueSearch;}
-
-	@DataBoundSetter
-	public void setValueSearch(String valueSearch){this.valueSearch = valueSearch;}
-
-	public String getTlsVersion(){return this.tlsVersion;}
+	public String getSubmitContent() {
+		return this.submitContent;
+	}
 
 	@DataBoundSetter
-	public void setTlsVersion(String tlsVersion){this.tlsVersion = tlsVersion;}
+	public void setSubmitContent(String submitContent) {
+		this.submitContent = submitContent;
+	}
 
-	public String getUri(){return this.uri;}
-
-	@DataBoundSetter
-	public void setUri(String submitContent){this.uri = uri;}
-
-	public String getSubmitContent(){return this.submitContent;}
-
-	@DataBoundSetter
-	public void setSubmitContent(String submitContent){this.submitContent = submitContent;}
-
-	public Format getFormat(){return this.format;}
+	public Format getFormat() {
+		return this.format;
+	}
 
 	@DataBoundSetter
-	public void setFormat(Format format){this.format = format;}
+	public void setFormat(Format format) {
+		this.format = format;
+	}
 
-	public Protocol getProtocol(){return this.protocol;}
+	public Protocol getProtocol() {
+		return this.protocol;
+	}
 
 	@DataBoundSetter
-	public void setProtocol(Protocol protocol){this.protocol = protocol;}
+	public void setProtocol(Protocol protocol) {
+		this.protocol = protocol;
+	}
 
 	@CheckForNull
 	@Override
@@ -119,14 +153,13 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 	}
 
-	public String getConfigDivId(){return this.uuid.toString();}
 	public String getDivId() {
 		return String.format("%s-%s", getName().replaceAll("\\W", "_"), this.uuid);
 	}
 
 	@Symbol("checkboxParameter")
 	@Extension
-	public static class DescriptorImpl extends ParameterDescriptor{
+	public static class DescriptorImpl extends ParameterDescriptor {
 		public DescriptorImpl() {
 			load();
 		}
@@ -151,22 +184,11 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			Format format = Format.valueOf(formData.getString("format"));
 			String submitContent = formData.getString("submitContent");
 			String uri = formData.getString("uri");
-			String searchCommand = formData.getString("searchCommand");
-			String displaySearch = formData.getString("displaySearch");
-			String valueSearch = formData.getString("valueSearch");
+			String displayNodePath = formData.getString("displayNodePath");
+			String valueNodePath = formData.getString("valueNodePath");
 			String tlsVersion = formData.getString("tlsVersion");
-			return new CheckboxParameterDefinition(name, protocol,format,submitContent,uri,searchCommand,displaySearch,valueSearch,tlsVersion);
+			boolean useInput = formData.getBoolean("useInput");
+			return new CheckboxParameterDefinition(name, protocol, format, submitContent, uri, displayNodePath, valueNodePath, tlsVersion, useInput);
 		}
-
-		public ListBoxModel doFillProtocolListItems(){
-			ListBoxModel list = new ListBoxModel();
-			for(Protocol protocol : Protocol.values()){
-				list.add(protocol.name());
-			}
-			return list;
-		}
-
 	}
-
-
 }

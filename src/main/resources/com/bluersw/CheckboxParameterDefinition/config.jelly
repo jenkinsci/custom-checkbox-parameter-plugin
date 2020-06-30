@@ -3,44 +3,31 @@
 	<f:entry title="${%parameter.name}" field="name">
 		<f:textbox/>
 	</f:entry>
-	<f:entry title="${%parameter.protocol}">
-	<f:block>
-		<table>
-		<f:optionalBlock name="use_remote_file" title="使用远程文件" checked="true">
-			<f:entry title="${%parameter.uri}" field="uri">
-				<f:textbox/>
-			</f:entry>
-			<f:advanced>
-				<f:entry title="${%parameter.tlsVersion}" field="tlsVersion">
-					<f:textbox default="TLSv1.2"/>
-				</f:entry>
-			</f:advanced>
-		</f:optionalBlock>
-		<f:optionalBlock name="use_local_file" title="使用本地文件">
-			<f:entry title="${%parameter.uri}" field="uri">
-				<f:textbox/>
-			</f:entry>
-		</f:optionalBlock>
-		<f:optionalBlock name="use_input" title="输入文件内容">
-			<f:entry title="${%parameter.submitContent}" field="submitContent">
-				<f:textarea value="${submitContent}" />
-			</f:entry>
-		</f:optionalBlock>
-		</table>
-	</f:block>
+	<f:entry title="${%parameter.protocol}" field="protocol">
+		<f:enum>${it}</f:enum>
+	</f:entry>
+	<f:entry title="${%parameter.uri}" field="uri">
+		<f:textbox/>
 	</f:entry>
 	<f:entry title="${%parameter.format}" field="format">
 		<f:enum>${it}</f:enum>
 	</f:entry>
-	<f:entry title="${%parameter.searchCommand}" field="searchCommand">
-		<f:textbox default="\\CheckboxParameter"/>
+	<f:entry title="${%parameter.displayNodePath}" field="displayNodePath">
+		<f:textbox default="\\CheckboxParameter\key"/>
 	</f:entry>
+	<f:entry title="${%parameter.valueNodePath}" field="valueNodePath">
+		<f:textbox default="\\CheckboxParameter\value"/>
+	</f:entry>
+	<f:block>
+		<f:optionalBlock name="useInput" title="${%parameter.useInput}" field="useInput">
+			<f:entry title="${%parameter.submitContent}" field="submitContent">
+				<f:textarea  codemirror-mode="${app.markupFormatter.codeMirrorMode}" codemirror-config="${app.markupFormatter.codeMirrorConfig}" previewEndpoint="/markupFormatter/previewDescription" />
+			</f:entry>
+		</f:optionalBlock>
+	</f:block>
 	<f:advanced>
-	<f:entry title="${%parameter.displaySearch}" field="displaySearch">
-		<f:textbox default="\key"/>
-	</f:entry>
-	<f:entry title="${%parameter.valueSearch}" field="valueSearch">
-		<f:textbox default="\value"/>
-	</f:entry>
+		<f:entry title="${%parameter.tlsVersion}" field="tlsVersion" description="${%parameter.tlsVersion.description}">
+			<f:textbox default="TLSv1.2"/>
+		</f:entry>
 	</f:advanced>
 </j:jelly>

@@ -1,0 +1,18 @@
+<div>
+    指定用于复选框选择值的节点路径（不同格式通用此路径格式），文件中根用"\\"表示，节点之间用"\"分割，比如YAML文件内容：<br/>
+    <br/>
+    CheckboxParameter:<br/>
+    - key: key-1<br/>
+      value: value-1<br/>
+    - key: key-2<br/>
+      value: value-2<br/>
+    - key: key-3<br/>
+      value: value-3<br/>
+    <br/>
+    显示节点路径：<br/>
+    \\CheckboxParameter\key<br/>
+    值节点路径：<br/>
+    \\CheckboxParameter\value<br/>
+    那么，会有三个复选框，其中复选框的显示内容分别是：key-1、key-2、key-3，勾选复选框之后可以获得值分别是：value-1、value-2、value-3<br/>
+
+</div>
