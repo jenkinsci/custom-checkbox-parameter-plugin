@@ -19,9 +19,9 @@
 		<f:textbox default="\\CheckboxParameter\value"/>
 	</f:entry>
 	<f:block>
-		<f:optionalBlock name="useInput" title="${%parameter.useInput}" field="useInput">
+		<f:optionalBlock name="useInput" title="${%parameter.useInput}" field="useInput" >
 			<f:entry title="${%parameter.submitContent}" field="submitContent">
-				<f:textarea  codemirror-mode="${app.markupFormatter.codeMirrorMode}" codemirror-config="${app.markupFormatter.codeMirrorConfig}" previewEndpoint="/markupFormatter/previewDescription" />
+				<f:textarea field="submitContent"  codemirror-mode="${app.markupFormatter.codeMirrorMode}" codemirror-config="${app.markupFormatter.codeMirrorConfig}" previewEndpoint="/markupFormatter/previewDescription" />
 			</f:entry>
 		</f:optionalBlock>
 	</f:block>

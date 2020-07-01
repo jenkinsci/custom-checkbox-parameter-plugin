@@ -12,5 +12,9 @@ public enum Format {
 	/**
 	 * JSON文档格式
 	 */
-	JSON
+	JSON,
+	/**
+	 * 空文档
+	 */
+	Empty
 }

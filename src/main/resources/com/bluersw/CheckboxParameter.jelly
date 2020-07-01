@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
-	<script src="${it.packageUrl}/javascript/checkbox-parameter-config.js" type="text/javascript" />
+	<script src="${it.packageUrl}/javascript/CheckboxParameter.js" type="text/javascript" />
 </j:jelly>

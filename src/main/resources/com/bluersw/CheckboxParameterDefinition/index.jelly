@@ -1,0 +1,21 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
+		 xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
+		 xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
+	<st:adjunct includes="com.bluersw.jquery"/>
+	<st:adjunct includes="com.bluersw.CheckboxParameter"/>
+	<f:entry title="${it.name}" description="${it.description}">
+		<div name="parameter" id="${it.divId}" style="white-space:nowrap" >
+			<input type="hidden" name="name" value="${it.name}" />
+			<br/>
+			<div id="checkbox_div" style="width:auto;"/>
+			<div id="result_message"/>
+		</div>
+		<script type="text/javascript">
+			var parentDiv = jQuery('#${it.divId}');
+			var requestBasicUrl = "${h.getCurrentDescriptorByNameUrl()}/${it.descriptor.descriptorUrl}/";
+			var parameterName = '${it.name}';
+			initializationCheckbox(parentDiv,requestBasicUrl,parameterName);
+		</script>
+	</f:entry>
+</j:jelly>

@@ -19,6 +19,8 @@ public class ConfigurationFactory {
 			return new YamlFormat(content);
 		}else if (format == Format.JSON){
 			return new JsonFormat(content);
+		}else if (format == Format.Empty){
+			return new EmptyFormat(content);
 		}else{
 			throw new IllegalArgumentException("There is no implementation of this document format.");
 		}
@@ -36,6 +38,8 @@ public class ConfigurationFactory {
 			return new YamlFormat(inputStream);
 		}else if (format == Format.JSON){
 			return new JsonFormat(inputStream);
+		}else if (format == Format.Empty){
+			return new EmptyFormat(inputStream);
 		}else{
 			throw new IllegalArgumentException("There is no implementation of this document format.");
 		}

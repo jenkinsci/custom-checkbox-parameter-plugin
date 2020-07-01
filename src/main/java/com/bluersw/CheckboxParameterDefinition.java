@@ -6,21 +6,25 @@ import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
 
 import com.bluersw.analyze.Format;
+import com.bluersw.model.CheckboxList;
 import com.bluersw.source.Protocol;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
+import hudson.model.Job;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
 import hudson.util.FormValidation;
-import hudson.util.ListBoxModel;
 import net.sf.json.JSONObject;
 import org.jenkinsci.Symbol;
+import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
+import static org.apache.commons.lang.StringUtils.*;
 
 /**
  * @author sunweisheng
@@ -57,6 +61,8 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.tlsVersion = tlsVersion;
 		this.useInput = useInput;
 	}
+
+	public String getDefaultValue(){return this.defaultValue;}
 
 	public boolean getUseInput() {
 		return this.useInput;
@@ -99,7 +105,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	}
 
 	@DataBoundSetter
-	public void setUri(String submitContent) {
+	public void setUri(String uri) {
 		this.uri = uri;
 	}
 
@@ -157,6 +163,11 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		return String.format("%s-%s", getName().replaceAll("\\W", "_"), this.uuid);
 	}
 
+	@Override
+	public DescriptorImpl getDescriptor() {
+		return (DescriptorImpl) super.getDescriptor();
+	}
+
 	@Symbol("checkboxParameter")
 	@Extension
 	public static class DescriptorImpl extends ParameterDescriptor {
@@ -164,7 +175,31 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			load();
 		}
 
-		public FormValidation doCheckName(@QueryParameter String name, @QueryParameter String protocol, @QueryParameter String format, @QueryParameter String submitContent, @QueryParameter String uri, @QueryParameter String searchCommand, @QueryParameter String displaySearch, @QueryParameter String valueSearch, @QueryParameter String tlsVersion) {
+		public FormValidation doCheckName(@QueryParameter String name) {
+			if (isBlank(name)) {
+				return FormValidation.error(Messages.CheckboxParameterDefinition_Name_IsBlank());
+			}
+			return FormValidation.ok();
+		}
+
+		public FormValidation doCheckDisplayNodePath(@QueryParameter String displayNodePath) {
+			if (isBlank(displayNodePath)) {
+				return FormValidation.error(Messages.CheckboxParameterDefinition_DisplayNodePath_IsBlank());
+			}
+			return FormValidation.ok();
+		}
+
+		public FormValidation doCheckValueNodePath(@QueryParameter String valueNodePath) {
+			if (isBlank(valueNodePath)) {
+				return FormValidation.error(Messages.CheckboxParameterDefinition_ValueNodePath_IsBlank());
+			}
+			return FormValidation.ok();
+		}
+
+		public FormValidation doCheckTlsVersion(@QueryParameter String tlsVersion) {
+			if (isBlank(tlsVersion)) {
+				return FormValidation.error(Messages.CheckboxParameterDefinition_TlsVersion_IsBlank());
+			}
 			return FormValidation.ok();
 		}
 
@@ -182,13 +217,25 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			String name = formData.getString("name");
 			Protocol protocol = Protocol.valueOf(formData.getString("protocol"));
 			Format format = Format.valueOf(formData.getString("format"));
-			String submitContent = formData.getString("submitContent");
+			JSONObject useInputObject = formData.getJSONObject("useInput");
+			String submitContent = useInputObject.size() == 0 ? null : useInputObject.getString("submitContent");
+			boolean useInput = isNotBlank(submitContent);
 			String uri = formData.getString("uri");
 			String displayNodePath = formData.getString("displayNodePath");
 			String valueNodePath = formData.getString("valueNodePath");
 			String tlsVersion = formData.getString("tlsVersion");
-			boolean useInput = formData.getBoolean("useInput");
 			return new CheckboxParameterDefinition(name, protocol, format, submitContent, uri, displayNodePath, valueNodePath, tlsVersion, useInput);
+		}
+
+		public CheckboxList doFillCheckboxItems(@AncestorInPath Job job, @QueryParameter String name){
+
+			CheckboxList list = new CheckboxList();
+			list.add("naaa","aaa");
+			list.add("nbbb","bbb");
+			list.add("nccc","ccc");
+
+			list.setMessage("成功。");
+			return list;
 		}
 	}
 }
