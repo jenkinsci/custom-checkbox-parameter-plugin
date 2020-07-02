@@ -45,6 +45,9 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	private static final long serialVersionUID = 5171255336407195201L;
 	private static final Logger LOGGER = Logger.getLogger(CheckboxParameterDefinition.class.getName());
 	private static final String DESCRIPTION = "Custom Checkbox Parameter.";
+	private static final String DEFAULT_TLS_VERSION="TLSv1.2";
+	private static final String DEFAULT_NAME_NODE="//CheckboxParameter/key";
+	private static final String DEFAULT_VALUE_NODE="//CheckboxParameter/value";
 
 	private final UUID uuid;
 	private String defaultValue;
@@ -337,16 +340,80 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		 * We need this for JENKINS-26143 -- reflective creation cannot handle setChoices(Object). See that method for context.
 		 */
 		public ParameterDefinition newInstance(@Nullable StaplerRequest req, @NonNull JSONObject formData) {
+			final String protocolName = "protocol";
+			final String formatName = "format";
+			final String useInputName = "useInput";
+			final String submitContentName = "submitContent";
+			final String uriName = "uri";
+			final String displayNodePathName = "displayNodePath";
+			final String valueNodePathName = "valueNodePath";
+			final String tlsVersionName = "tlsVersion";
+			boolean emptyContent = false;
+
 			String name = formData.getString("name");
-			Protocol protocol = Protocol.valueOf(formData.getString("protocol"));
-			Format format = Format.valueOf(formData.getString("format"));
-			JSONObject useInputObject = formData.getJSONObject("useInput");
-			String submitContent = useInputObject.size() == 0 ? null : useInputObject.getString("submitContent");
-			boolean useInput = isNotBlank(submitContent);
-			String uri = formData.getString("uri");
-			String displayNodePath = formData.getString("displayNodePath");
-			String valueNodePath = formData.getString("valueNodePath");
-			String tlsVersion = formData.getString("tlsVersion");
+
+			if(formData.get(uriName) == null && formData.get(submitContentName) == null){
+				emptyContent = true;
+			}
+
+			Protocol protocol;
+			if(formData.get(protocolName) != null){
+				protocol = Protocol.valueOf(formData.getString(protocolName));
+			}else{
+				protocol = Protocol.HTTP;
+			}
+
+			Format format;
+			if(formData.get(formatName) != null){
+				format = Format.valueOf(formData.getString(formatName));
+			}else{
+				format = Format.Empty;
+			}
+
+			boolean useInput=false;
+			String submitContent="";
+			if(formData.get(useInputName) != null){
+				JSONObject useInputObject = formData.getJSONObject(useInputName);
+				if(formData.get(submitContentName) != null){
+					submitContent = useInputObject.size() == 0 ? null : useInputObject.getString(submitContentName);
+					useInput = isNotBlank(submitContent);
+				}
+			}
+
+			String uri;
+			if(formData.get(uriName) != null){
+				uri = formData.getString(uriName);
+			}else {
+				uri = "";
+			}
+
+			if(emptyContent || (isEmpty(uri) && isEmpty(submitContent))){
+				useInput = true;
+				submitContent="";
+				format = Format.Empty;
+			}
+
+			String displayNodePath;
+			if(formData.get(displayNodePathName) != null){
+				displayNodePath = formData.getString(displayNodePathName);
+			}else {
+				displayNodePath = DEFAULT_NAME_NODE;
+			}
+
+			String valueNodePath;
+			if(formData.get(valueNodePathName) != null){
+				valueNodePath = formData.getString(valueNodePathName);
+			}else {
+				valueNodePath = DEFAULT_VALUE_NODE;
+			}
+
+			String tlsVersion;
+			if(formData.get(tlsVersionName) != null){
+				tlsVersion = formData.getString(tlsVersionName);
+			}else {
+				tlsVersion = DEFAULT_TLS_VERSION;
+			}
+
 			return new CheckboxParameterDefinition(name, protocol, format, submitContent, uri, displayNodePath, valueNodePath, tlsVersion, useInput);
 		}
 

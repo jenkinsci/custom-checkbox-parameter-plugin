@@ -7,7 +7,7 @@
 	<f:entry title="${it.name}" description="${it.description}">
 		<div name="parameter" id="${it.divId}" style="white-space:nowrap" >
 			<input type="hidden" name="name" value="${it.name}" />
-		<label style='padding:0 0 0 10px'><input type="checkbox" name="all_checkbox" value="checkall" class="checkbox-all"/>全选 </label>
+		<label style='padding:0 0 0 10px'><input type="checkbox" name="all_checkbox" value="checkall" class="checkbox-all"/>${%parameter.selectAll} </label>
 			<br/>
 			<div id="checkbox_div" style="width:auto;"/>
 			<div id="result_message"/>
