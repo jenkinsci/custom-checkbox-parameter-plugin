@@ -24,7 +24,10 @@ public class CheckboxList implements HttpResponse {
 	@Exported
 	public String message = "";
 
-	public void add(String name, String value){this.list.add(new CheckboxModel(name,value));}
+	public void add(String name, String value,boolean selected){
+		String checked = selected? "checked":"";
+		this.list.add(new CheckboxModel(name,value,checked));
+	}
 
 	public void setMessage(String message){this.message = message;}
 
@@ -41,10 +44,13 @@ public class CheckboxList implements HttpResponse {
 		public String name;
 		@Exported
 		public String value;
+		@Exported
+		public String checked;
 
-		public CheckboxModel(String name, String value){
+		public CheckboxModel(String name, String value, String checked){
 			this.name = name;
 			this.value = value;
+			this.checked = checked;
 		}
 	}
 }

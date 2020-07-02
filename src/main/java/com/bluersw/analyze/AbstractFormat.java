@@ -102,11 +102,12 @@ public abstract class AbstractFormat implements Configuration {
 
 	/**
 	 * 实现Configuration接口，通过搜索命令检索索引中的数据并返回结果列表
-	 * @param searchCommand 搜索命令，格式类似XPath语法，以"\\"开始每层用"\"分割开
+	 * @param searchCommand 搜索命令，格式类似XPath语法，以"//"开始每层用"/"分割开
 	 * @return 搜索结果列表
 	 */
 	@Override
 	public List<String> getValueListBySearch(String searchCommand){
+		searchCommand = searchCommand.replace('\\','/');
 		List<String> result = new ArrayList<>();
 		for (Map.Entry<String, String> entry : this.index.entrySet()) {
 			if (entry.getKey().startsWith(searchCommand)) {

@@ -1,5 +1,5 @@
 <div>
-    Specify the node path used for the check box display content (this format is common to different formats), the root in the file is represented by "\\", and the nodes are separated by "\", such as YAML file content:<br/>
+    Specify the node path used for the check box display content (this format is common to different formats), the root in the file is represented by "//", and the nodes are separated by "/", such as YAML file content:<br/>
     <br/>
     CheckboxParameter:<br/>
     - key: key-1<br/>
@@ -10,9 +10,9 @@
       value: value-3<br/>
     <br/>
     Display node path:<br/>
-    \\CheckboxParameter\key<br/>
+    //CheckboxParameter/key<br/>
     Value node path:<br/>
-    \\CheckboxParameter\value<br/>
+    //CheckboxParameter/value<br/>
     Then, there will be three check boxes, of which the display contents of the check boxes are: key-1, key-2, key-3, and the values obtained after checking the check boxes are: value-1, value-2 , Value-3<br/>
 
 </div>

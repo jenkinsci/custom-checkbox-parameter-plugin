@@ -13,10 +13,10 @@
 		<f:enum>${it}</f:enum>
 	</f:entry>
 	<f:entry title="${%parameter.displayNodePath}" field="displayNodePath">
-		<f:textbox default="\\CheckboxParameter\key"/>
+		<f:textbox default="//CheckboxParameter/key"/>
 	</f:entry>
 	<f:entry title="${%parameter.valueNodePath}" field="valueNodePath">
-		<f:textbox default="\\CheckboxParameter\value"/>
+		<f:textbox default="//CheckboxParameter/value"/>
 	</f:entry>
 	<f:block>
 		<f:optionalBlock name="useInput" title="${%parameter.useInput}" field="useInput" >

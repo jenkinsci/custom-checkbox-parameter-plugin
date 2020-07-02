@@ -1,22 +1,33 @@
 package com.bluersw;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.CheckForNull;
 
+import com.bluersw.analyze.Configuration;
+import com.bluersw.analyze.ConfigurationFactory;
 import com.bluersw.analyze.Format;
 import com.bluersw.model.CheckboxList;
+import com.bluersw.model.Result;
+import com.bluersw.source.DataSource;
+import com.bluersw.source.DataSourceFactory;
 import com.bluersw.source.Protocol;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
+import hudson.cli.CLICommand;
 import hudson.model.Job;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
+import hudson.model.ParametersDefinitionProperty;
 import hudson.util.FormValidation;
 import net.sf.json.JSONObject;
+import org.apache.http.HttpStatus;
 import org.jenkinsci.Symbol;
 import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -60,9 +71,16 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.valueNodePath = valueNodePath;
 		this.tlsVersion = tlsVersion;
 		this.useInput = useInput;
+		this.defaultValue = "";
 	}
 
-	public String getDefaultValue(){return this.defaultValue;}
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public String getDefaultValue() {
+		return this.defaultValue;
+	}
 
 	public boolean getUseInput() {
 		return this.useInput;
@@ -138,14 +156,46 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 	@CheckForNull
 	@Override
+	@SuppressWarnings("rawtypes")
 	public ParameterValue createValue(StaplerRequest staplerRequest, JSONObject jsonObject) {
-		return null;
+		StringBuilder result = new StringBuilder();
+		for (Object o : jsonObject.entrySet()) {
+			Map.Entry entry = (Map.Entry) o;
+			if (entry.getKey().toString().startsWith("checkbox_")) {
+				if (Boolean.parseBoolean(entry.getValue().toString())) {
+					result.append(entry.getKey().toString().replace("checkbox_", ""));
+					result.append(',');
+				}
+			}
+		}
+
+		this.defaultValue = result.toString().substring(0, result.toString().length() - 1);
+		return new CheckboxParameterValue(jsonObject.getString("name"), result.toString());
 	}
 
 	@CheckForNull
 	@Override
 	public ParameterValue createValue(StaplerRequest staplerRequest) {
-		return null;
+		String[] value = staplerRequest.getParameterValues(this.getName());
+		if (value == null || value.length == 0 || isBlank(value[0])) {
+			return this.getDefaultParameterValue();
+		}
+		else {
+			return new CheckboxParameterValue(this.getName(), value[0]);
+		}
+	}
+
+	@Override
+	public ParameterValue createValue(CLICommand command, String value) {
+		if (isNotEmpty(value)) {
+			return new CheckboxParameterValue(this.getName(), value);
+		}
+		return getDefaultParameterValue();
+	}
+
+	@Override
+	public ParameterValue getDefaultParameterValue() {
+		return new CheckboxParameterValue(this.getName(), this.getDefaultValue());
 	}
 
 	@SuppressFBWarnings(value = "EQ_COMPARETO_USE_OBJECT_EQUALS")
@@ -161,6 +211,79 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 	public String getDivId() {
 		return String.format("%s-%s", getName().replaceAll("\\W", "_"), this.uuid);
+	}
+
+	private Result<String> getFileContent() {
+		Result<String> result = new Result<>();
+		if (this.useInput) {
+			result.setContent(this.submitContent);
+			result.setSucceed(true);
+		}
+		else {
+			DataSource source = DataSourceFactory.createDataSource(this.protocol, this.uri, this.tlsVersion);
+			try {
+				result.setContent(source.get());
+				result.setSucceed(true);
+				if (source.getStatusCode() != HttpStatus.SC_OK) {
+					result.setMessage(source.getStatusLine());
+					result.setContent("");
+					result.setSucceed(false);
+				}
+			}
+			catch (Exception e) {
+				String exMessage = e.getMessage() == null ? e.toString() : e.getMessage();
+				result.setContent("");
+				result.setSucceed(false);
+				result.setMessage(String
+						.format("%s: %s", Messages.CheckboxParameterDefinition_GetFileFailed(), exMessage));
+				LOGGER.log(Level.SEVERE, String
+						.format("Failed to get file content: protocol: %s,uri: %s,tlsVersion: %s,exception info: %s"
+								, this.protocol.name(), this.uri, this.tlsVersion, exMessage));
+			}
+		}
+
+		return result;
+	}
+
+	private boolean isExist(String[] array, String value) {
+		for (String item : array) {
+			if (item.equals(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public CheckboxList getCheckboxList() {
+		CheckboxList checkboxList = new CheckboxList();
+		Result<String> fileContent = getFileContent();
+		try {
+			if (!fileContent.isSucceed()) {
+				checkboxList.message = fileContent.getMessage();
+			}
+			else {
+				Configuration config = ConfigurationFactory.createConfiguration(this.format, fileContent.getContent());
+				List<String> names = config.getValueListBySearch(this.displayNodePath);
+				List<String> values = config.getValueListBySearch(this.valueNodePath);
+				String[] defaultValues = this.defaultValue.split(",");
+
+				int count = Math.min(names.size(), values.size());
+
+				for (int i = 0; i < count; i++) {
+					boolean selected = isExist(defaultValues, values.get(i));
+					checkboxList.add(names.get(i), values.get(i), selected);
+				}
+			}
+		}
+		catch (Exception e) {
+			String exMessage = e.getMessage() == null ? e.toString() : e.getMessage();
+			checkboxList.message = String
+					.format("%s: %s", Messages.CheckboxParameterDefinition_CreateCheckboxFailed(), exMessage);
+			LOGGER.log(Level.SEVERE, String
+					.format("Failed to create checkbox list,exception info: %s", exMessage));
+		}
+
+		return checkboxList;
 	}
 
 	@Override
@@ -227,15 +350,22 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			return new CheckboxParameterDefinition(name, protocol, format, submitContent, uri, displayNodePath, valueNodePath, tlsVersion, useInput);
 		}
 
-		public CheckboxList doFillCheckboxItems(@AncestorInPath Job job, @QueryParameter String name){
-
-			CheckboxList list = new CheckboxList();
-			list.add("naaa","aaa");
-			list.add("nbbb","bbb");
-			list.add("nccc","ccc");
-
-			list.setMessage("成功。");
-			return list;
+		public CheckboxList doFillCheckboxItems(@AncestorInPath Job job, @QueryParameter String name) {
+			CheckboxList checkboxList = null;
+			ParametersDefinitionProperty prop = (ParametersDefinitionProperty) job
+					.getProperty(ParametersDefinitionProperty.class);
+			if (prop != null) {
+				ParameterDefinition pd = prop.getParameterDefinition(name);
+				if (pd instanceof CheckboxParameterDefinition) {
+					CheckboxParameterDefinition cpd = (CheckboxParameterDefinition) pd;
+					checkboxList = cpd.getCheckboxList();
+				}
+			}
+			if (checkboxList == null) {
+				checkboxList = new CheckboxList();
+				checkboxList.message = "Parameter Definition Not Found.";
+			}
+			return checkboxList;
 		}
 	}
 }
