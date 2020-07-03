@@ -2,6 +2,8 @@ package com.bluersw.source;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.net.ssl.X509TrustManager;
 
@@ -11,14 +13,16 @@ import javax.net.ssl.X509TrustManager;
  */
 public class HttpsTrustManager implements X509TrustManager {
 
+	private static final Logger LOGGER = Logger.getLogger(HttpsTrustManager.class.getName());
+
 	@Override
 	public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
+		LOGGER.log(Level.SEVERE, String.format("checkClientTrusted,s: %s", s));
 	}
 
 	@Override
 	public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
+		LOGGER.log(Level.SEVERE, String.format("checkServerTrusted,s: %s", s));
 	}
 
 	@Override
