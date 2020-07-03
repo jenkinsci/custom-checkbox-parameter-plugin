@@ -12,11 +12,10 @@ public class FileReadTests {
 	public void get() throws Exception {
 		Properties properties = System.getProperties();
 		String path = properties.getProperty("user.dir");
-		DataSource file = DataSourceFactory.createDataSource(Protocol.LOCAL, path + "/src/main/resources/test/analyze/examples.json");
+		DataSource file = DataSourceFactory.createDataSource(Protocol.JENKINS_LOCAL, path + "/src/main/resources/test/analyze/examples.json");
 		String json = file.get();
 		assertNotNull(json);
 		assertEquals(file.getStatusLine(),"Read File Success.StatusCode:200");
 		assertEquals(file.getStatusCode(),200);
-		//System.out.print(json);
 	}
 }

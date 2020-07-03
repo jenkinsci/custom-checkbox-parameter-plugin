@@ -15,7 +15,7 @@ public class DataSourceFactory {
 	public static DataSource createDataSource(Protocol protocol, String uri) {
 		if (protocol == Protocol.HTTP || protocol == Protocol.HTTPS) {
 			return new HttpRequest(uri);
-		}else if(protocol == Protocol.LOCAL){
+		}else if(protocol == Protocol.JENKINS_LOCAL){
 			return new FileRead(uri);
 		}else {
 			throw new IllegalArgumentException("Did not implement this protocol.");
@@ -32,7 +32,7 @@ public class DataSourceFactory {
 	public static DataSource createDataSource(Protocol protocol, String uri, String protocolVersion) {
 		if (protocol == Protocol.HTTP || protocol == Protocol.HTTPS) {
 			return new HttpRequest(uri, protocolVersion);
-		}else if(protocol == Protocol.LOCAL){
+		}else if(protocol == Protocol.JENKINS_LOCAL){
 			return new FileRead(uri);
 		}else {
 			throw new IllegalArgumentException("Did not implement this protocol.");

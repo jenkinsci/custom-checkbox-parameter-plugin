@@ -15,7 +15,7 @@ public enum Protocol {
 	 */
 	HTTPS,
 	/**
-	 * 通过本地文件获取数据
+	 * 通过Jenkins服务器的文件系统获取数据
 	 */
-	LOCAL
+	JENKINS_LOCAL
 }

@@ -44,9 +44,9 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 	private static final long serialVersionUID = 5171255336407195201L;
 	private static final Logger LOGGER = Logger.getLogger(CheckboxParameterDefinition.class.getName());
-	private static final String DEFAULT_TLS_VERSION="TLSv1.2";
-	private static final String DEFAULT_NAME_NODE="//CheckboxParameter/key";
-	private static final String DEFAULT_VALUE_NODE="//CheckboxParameter/value";
+	private static final String DEFAULT_TLS_VERSION = "TLSv1.2";
+	private static final String DEFAULT_NAME_NODE = "//CheckboxParameter/key";
+	private static final String DEFAULT_VALUE_NODE = "//CheckboxParameter/value";
 
 	private final UUID uuid;
 	private String defaultValue;
@@ -65,13 +65,13 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			String valueNodePath, String tlsVersion, boolean useInput) {
 		super(name, description);
 		this.uuid = UUID.randomUUID();
-		this.protocol = protocol;
-		this.format = format;
-		this.submitContent = submitContent;
-		this.uri = uri;
-		this.displayNodePath = displayNodePath;
-		this.valueNodePath = valueNodePath;
-		this.tlsVersion = tlsVersion;
+		this.protocol = protocol == null ? Protocol.HTTP : protocol;
+		this.format = format == null ? Format.Empty : format;
+		this.submitContent = submitContent == null ? "" : submitContent;
+		this.uri = uri == null ? "" : uri;
+		this.displayNodePath = displayNodePath == null ? DEFAULT_NAME_NODE : displayNodePath;
+		this.valueNodePath = valueNodePath == null ? DEFAULT_VALUE_NODE : valueNodePath;
+		this.tlsVersion = tlsVersion == null ? DEFAULT_TLS_VERSION : tlsVersion;
 		this.useInput = useInput;
 		this.defaultValue = "";
 	}
@@ -171,8 +171,13 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			}
 		}
 
-		this.defaultValue = result.toString().substring(0, result.toString().length() - 1);
-		return new CheckboxParameterValue(jsonObject.getString("name"), result.toString());
+		if (result.toString().length() > 0) {
+			this.defaultValue = result.toString().substring(0, result.toString().length() - 1);
+		}
+		else {
+			this.defaultValue = "";
+		}
+		return new CheckboxParameterValue(jsonObject.getString("name"), this.defaultValue);
 	}
 
 	@CheckForNull
@@ -222,8 +227,8 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			result.setSucceed(true);
 		}
 		else {
-			DataSource source = DataSourceFactory.createDataSource(this.protocol, this.uri, this.tlsVersion);
 			try {
+				DataSource source = DataSourceFactory.createDataSource(this.protocol, this.uri, this.tlsVersion);
 				result.setContent(source.get());
 				result.setSucceed(true);
 				if (source.getStatusCode() != HttpStatus.SC_OK) {
@@ -240,7 +245,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 						.format("%s: %s", Messages.CheckboxParameterDefinition_GetFileFailed(), exMessage));
 				LOGGER.log(Level.SEVERE, String
 						.format("Failed to get file content: protocol: %s,uri: %s,tlsVersion: %s,exception info: %s"
-								, this.protocol.name(), this.uri, this.tlsVersion, exMessage));
+								, this.protocol, this.uri, this.tlsVersion, exMessage));
 			}
 		}
 
@@ -350,70 +355,33 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			final String descriptionName = "description";
 
 			String name = formData.getString("name");
+			String description = formData.get(descriptionName) != null ? formData.getString(descriptionName) : "";
 
-			String description;
-			if(formData.get(descriptionName) != null){
-				description = formData.getString(descriptionName);
-			}else {
-				description = "";
-			}
+			Protocol protocol = formData.get(protocolName) != null ? Protocol
+					.valueOf(formData.getString(protocolName)) : Protocol.HTTP;
 
-			Protocol protocol;
-			if(formData.get(protocolName) != null){
-				protocol = Protocol.valueOf(formData.getString(protocolName));
-			}else{
-				protocol = Protocol.HTTP;
-			}
+			Format format = formData.get(formatName) != null ? Format
+					.valueOf(formData.getString(formatName)) : Format.Empty;
 
-			Format format;
-			if(formData.get(formatName) != null){
-				format = Format.valueOf(formData.getString(formatName));
-			}else{
-				format = Format.Empty;
-			}
+			String uri = formData.get(uriName) != null ? formData.getString(uriName) : "";
 
-			boolean useInput=false;
-			String submitContent="";
-			if(formData.get(useInputName) != null){
+			String displayNodePath = formData.get(displayNodePathName) != null ? formData
+					.getString(displayNodePathName) : DEFAULT_NAME_NODE;
+
+			String valueNodePath = formData.get(valueNodePathName) != null ? formData
+					.getString(valueNodePathName) : DEFAULT_VALUE_NODE;
+
+			String tlsVersion = formData.get(tlsVersionName) != null ? formData
+					.getString(tlsVersionName) : DEFAULT_TLS_VERSION;
+
+			boolean useInput = false;
+			String submitContent = "";
+			if (formData.get(useInputName) != null) {
 				JSONObject useInputObject = formData.getJSONObject(useInputName);
-				if(useInputObject.get(submitContentName) != null){
-					submitContent = useInputObject.size() == 0 ? null : useInputObject.getString(submitContentName);
+				if (useInputObject.get(submitContentName) != null) {
+					submitContent = useInputObject.size() == 0 ? "" : useInputObject.getString(submitContentName);
 					useInput = isNotBlank(submitContent);
 				}
-			}
-
-			String uri;
-			if(formData.get(uriName) != null){
-				uri = formData.getString(uriName);
-			}else {
-				uri = "";
-			}
-
-			if((isEmpty(uri) && isEmpty(submitContent))){
-				useInput = true;
-				submitContent="";
-				format = Format.Empty;
-			}
-
-			String displayNodePath;
-			if(formData.get(displayNodePathName) != null){
-				displayNodePath = formData.getString(displayNodePathName);
-			}else {
-				displayNodePath = DEFAULT_NAME_NODE;
-			}
-
-			String valueNodePath;
-			if(formData.get(valueNodePathName) != null){
-				valueNodePath = formData.getString(valueNodePathName);
-			}else {
-				valueNodePath = DEFAULT_VALUE_NODE;
-			}
-
-			String tlsVersion;
-			if(formData.get(tlsVersionName) != null){
-				tlsVersion = formData.getString(tlsVersionName);
-			}else {
-				tlsVersion = DEFAULT_TLS_VERSION;
 			}
 
 			return new CheckboxParameterDefinition(name, description, protocol, format, submitContent, uri, displayNodePath, valueNodePath, tlsVersion, useInput);
