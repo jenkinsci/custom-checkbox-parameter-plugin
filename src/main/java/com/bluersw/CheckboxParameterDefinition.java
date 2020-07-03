@@ -348,13 +348,8 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			final String displayNodePathName = "displayNodePath";
 			final String valueNodePathName = "valueNodePath";
 			final String tlsVersionName = "tlsVersion";
-			boolean emptyContent = false;
 
 			String name = formData.getString("name");
-
-			if(formData.get(uriName) == null && formData.get(submitContentName) == null){
-				emptyContent = true;
-			}
 
 			Protocol protocol;
 			if(formData.get(protocolName) != null){
@@ -374,7 +369,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			String submitContent="";
 			if(formData.get(useInputName) != null){
 				JSONObject useInputObject = formData.getJSONObject(useInputName);
-				if(formData.get(submitContentName) != null){
+				if(useInputObject.get(submitContentName) != null){
 					submitContent = useInputObject.size() == 0 ? null : useInputObject.getString(submitContentName);
 					useInput = isNotBlank(submitContent);
 				}
@@ -387,7 +382,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 				uri = "";
 			}
 
-			if(emptyContent || (isEmpty(uri) && isEmpty(submitContent))){
+			if((isEmpty(uri) && isEmpty(submitContent))){
 				useInput = true;
 				submitContent="";
 				format = Format.Empty;
