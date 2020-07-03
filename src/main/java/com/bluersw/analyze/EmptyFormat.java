@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 
 /**
- * 如果URI和用户输入都是空的情况下创建空文档对象
+ * 如果URI和用户输入内容都是空的情况下创建空文档对象 Create empty document object if both URI and user input are empty
  * @author sunweisheng
  */
 public class EmptyFormat extends AbstractFormat {

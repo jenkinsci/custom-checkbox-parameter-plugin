@@ -38,6 +38,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import static org.apache.commons.lang.StringUtils.*;
 
 /**
+ * 自定义复选框构建参数定义类 Custom check box construction parameter definition class
  * @author sunweisheng
  */
 public class CheckboxParameterDefinition extends ParameterDefinition implements Comparable<CheckboxParameterDefinition> {
@@ -156,6 +157,12 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.protocol = protocol;
 	}
 
+	/**
+	 * 根据用户勾选的复选框创建构建参数返回值 Create the return value of the build parameter according to the check box checked by the user
+	 * @param staplerRequest  staplerRequest
+	 * @param jsonObject 用户提交的健值对数据 User submitted map data
+	 * @return 用户勾选复选框的值，用","分割的字符串 The user selects the value of the check box, and the string separated by ","
+	 */
 	@CheckForNull
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -220,6 +227,10 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		return String.format("%s-%s", getName().replaceAll("\\W", "_"), this.uuid);
 	}
 
+	/**
+	 * 获取文件内容 Get file content
+	 * @return Result<String>
+	 */
 	private Result<String> getFileContent() {
 		Result<String> result = new Result<>();
 		if (this.useInput) {
@@ -261,6 +272,10 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		return false;
 	}
 
+	/**
+	 * 根据文件内容创建复选框列表 Create checkbox list based on file content
+	 * @return 复选框列表 Checkbox list
+	 */
 	public CheckboxList getCheckboxList() {
 		CheckboxList checkboxList = new CheckboxList();
 		Result<String> fileContent = getFileContent();

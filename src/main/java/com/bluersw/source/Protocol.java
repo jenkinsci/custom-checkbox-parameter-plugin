@@ -1,21 +1,21 @@
 package com.bluersw.source;
 
 /**
- * 数据源操作协议枚举
+ * 数据源协议枚举 Data source protocol enumeration
  * @author sunweisheng
  */
 
 public enum Protocol {
 	/**
-	 * 通过HTTP协议获取数据
+	 * 通过HTTP协议获取数据 Get data via HTTP protocol
 	 */
 	HTTP,
 	/**
-	 * 通过HTTPS协议获取数据
+	 * 通过HTTPS协议获取数据 Get data via HTTPS protocol
 	 */
 	HTTPS,
 	/**
-	 * 通过Jenkins服务器的文件系统获取数据
+	 * 通过Jenkins服务器的文件系统获取数据 Get data through the file system of the Jenkins server
 	 */
 	JENKINS_LOCAL
 }

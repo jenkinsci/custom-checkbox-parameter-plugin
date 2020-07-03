@@ -17,8 +17,8 @@ import org.apache.http.ssl.SSLContexts;
 import org.apache.http.util.EntityUtils;
 
 /**
+ * 通过HTTP和HTTPS协议获得响应结果 Get response results through HTTP and HTTPS protocols
  * @author sunweisheng
- * 请求HTTP和HTTPS协议获得字符串响应结果
  */
 public class HttpRequest implements DataSource {
 
@@ -28,8 +28,8 @@ public class HttpRequest implements DataSource {
 	private final String tlsVersion;
 
 	/**
-	 * 通过要请求的URI构建请求对象
-	 * @param uri 要请求的URI地址
+	 * 通过要请求的URI构建请求对象 Construct the request object by the URI to be requested
+	 * @param uri 要请求的URI地址 URL
 	 */
 	public HttpRequest(String uri) {
 		this.uri = uri;
@@ -37,9 +37,9 @@ public class HttpRequest implements DataSource {
 	}
 
 	/**
-	 * 通过URI和TLS版本构建请求对象
-	 * @param uri 要请求的URI地址
-	 * @param tlsVersion SSL/TLS版本 默认：TLSv1.2
+	 * 通过URI和TLS版本构建请求对象 Build request object by URI and TLS version
+	 * @param uri 要请求的URI地址 URL
+	 * @param tlsVersion SSL/TLS版本 默认：TLSv1.2  SSL/TLS version Default: TLSv1.2
 	 */
 	public HttpRequest(String uri, String tlsVersion) {
 		this.uri = uri;
@@ -47,8 +47,8 @@ public class HttpRequest implements DataSource {
 	}
 
 	/**
-	 * 获得请求结果HTTP状态的字符串说明
-	 * @return HTTP状态的字符串说明
+	 * 获得请求结果HTTP状态的字符串说明 Get the string description of the HTTP status of the request result
+	 * @return HTTP状态的字符串说明 String description of HTTP status
 	 */
 	@Override
 	public String getStatusLine() {
@@ -56,8 +56,8 @@ public class HttpRequest implements DataSource {
 	}
 
 	/**
-	 * 获得请求结果HTTP状态码
-	 * @return HTTP状态码
+	 * 获得请求结果HTTP状态码 Get request result HTTP status code
+	 * @return HTTP状态码 HTTP status code
 	 */
 	@Override
 	public int getStatusCode() {
@@ -65,9 +65,9 @@ public class HttpRequest implements DataSource {
 	}
 
 	/**
-	 * 根据HTTP或HTTPS创建CloseableHttpClient对象
-	 * @return CloseableHttpClient对象
-	 * @throws Exception Exception异常
+	 * 根据HTTP或HTTPS创建CloseableHttpClient对象 Create CloseableHttpClient object based on HTTP or HTTPS
+	 * @return CloseableHttpClient对象 CloseableHttpClient
+	 * @throws Exception 异常 Exception
 	 */
 	private CloseableHttpClient createClientByProtocol() throws Exception {
 		final String http = "http";
@@ -96,9 +96,9 @@ public class HttpRequest implements DataSource {
 	}
 
 	/**
-	 * 获得GET请求字符串结果
-	 * @return GET请求字符串结果
-	 * @throws Exception Exception异常
+	 * 获得GET请求的响应结果 Get the response result of GET request
+	 * @return 响应结果 Response results
+	 * @throws Exception 异常 Exception
 	 */
 	@Override
 	public String get() throws Exception {

@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
- * 文件读取类
+ * 文件读取类 File reading class
  * @author sunweisheng
  */
 public class FileRead implements DataSource {
@@ -17,8 +17,8 @@ public class FileRead implements DataSource {
 	private static final String FILE_SEPARATOR = System.getProperty("file.separator");
 
 	/**
-	 * 构建函数
-	 * @param filePath 文件路径
+	 * 构建函数 Constructor
+	 * @param filePath 文件路径 file path
 	 */
 	public FileRead(String filePath){
 		this.filePath = filePath.replace("/",FILE_SEPARATOR).replace("\\",FILE_SEPARATOR);

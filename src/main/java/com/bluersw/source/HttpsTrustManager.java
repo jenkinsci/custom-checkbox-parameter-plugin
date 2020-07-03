@@ -6,8 +6,8 @@ import java.security.cert.X509Certificate;
 import javax.net.ssl.X509TrustManager;
 
 /**
+ * 信任所有证书，只需实现X509TrustManager并自动生成所有方法即可完成。  To trust all certificates, you only need to implement X509TrustManager and automatically generate all methods to complete.
  * @author sunweisheng
- * 信任所有证书，只需实现X509TrustManager并自动生成所有方法即可完成。
  */
 public class HttpsTrustManager implements X509TrustManager {
 

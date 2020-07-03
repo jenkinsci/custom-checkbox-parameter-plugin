@@ -14,6 +14,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.export.Flavor;
 
 /**
+ * 复选框列表JSON对象 Checkbox list JSON object
  * @author sunweisheng
  */
 @ExportedBean
@@ -24,11 +25,21 @@ public class CheckboxList implements HttpResponse {
 	@Exported
 	public String message = "";
 
+	/**
+	 * 添加一个复选框 Add a checkbox
+	 * @param name 复选框显示的文字 Checkbox text
+	 * @param value 选择复选框的值 Select the value of the check box
+	 * @param selected 复选框是否被勾选 Whether the check box is checked
+	 */
 	public void add(String name, String value,boolean selected){
 		String checked = selected? "checked":"";
 		this.list.add(new CheckboxModel(name,value,checked));
 	}
 
+	/**
+	 * 客户端显示的信息 Information displayed by the client
+	 * @param message 显示的信息 Information displayed
+	 */
 	public void setMessage(String message){this.message = message;}
 
 	@Override
@@ -38,6 +49,9 @@ public class CheckboxList implements HttpResponse {
 		staplerResponse.serveExposedBean(staplerRequest,this, ec);
 	}
 
+	/**
+	 * 复选框数据模型定义 Checkbox data model definition
+	 */
 	@ExportedBean(defaultVisibility=999)
 	public static final class CheckboxModel {
 		@Exported
