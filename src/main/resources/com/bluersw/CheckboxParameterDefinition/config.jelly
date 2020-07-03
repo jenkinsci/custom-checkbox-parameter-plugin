@@ -3,6 +3,9 @@
 	<f:entry title="${%parameter.name}" field="name">
 		<f:textbox/>
 	</f:entry>
+	<f:entry title="${%parameter.description}" field="description">
+		<f:textbox/>
+	</f:entry>
 	<f:entry title="${%parameter.protocol}" field="protocol">
 		<f:enum>${it}</f:enum>
 	</f:entry>

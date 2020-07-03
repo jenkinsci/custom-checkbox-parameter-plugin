@@ -44,7 +44,6 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 	private static final long serialVersionUID = 5171255336407195201L;
 	private static final Logger LOGGER = Logger.getLogger(CheckboxParameterDefinition.class.getName());
-	private static final String DESCRIPTION = "Custom Checkbox Parameter.";
 	private static final String DEFAULT_TLS_VERSION="TLSv1.2";
 	private static final String DEFAULT_NAME_NODE="//CheckboxParameter/key";
 	private static final String DEFAULT_VALUE_NODE="//CheckboxParameter/value";
@@ -61,10 +60,10 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	private boolean useInput;
 
 	@DataBoundConstructor
-	public CheckboxParameterDefinition(String name, Protocol protocol, Format format,
+	public CheckboxParameterDefinition(String name, String description, Protocol protocol, Format format,
 			String submitContent, String uri, String displayNodePath,
 			String valueNodePath, String tlsVersion, boolean useInput) {
-		super(name, DESCRIPTION);
+		super(name, description);
 		this.uuid = UUID.randomUUID();
 		this.protocol = protocol;
 		this.format = format;
@@ -348,8 +347,16 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			final String displayNodePathName = "displayNodePath";
 			final String valueNodePathName = "valueNodePath";
 			final String tlsVersionName = "tlsVersion";
+			final String descriptionName = "description";
 
 			String name = formData.getString("name");
+
+			String description;
+			if(formData.get(descriptionName) != null){
+				description = formData.getString(descriptionName);
+			}else {
+				description = "";
+			}
 
 			Protocol protocol;
 			if(formData.get(protocolName) != null){
@@ -409,7 +416,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 				tlsVersion = DEFAULT_TLS_VERSION;
 			}
 
-			return new CheckboxParameterDefinition(name, protocol, format, submitContent, uri, displayNodePath, valueNodePath, tlsVersion, useInput);
+			return new CheckboxParameterDefinition(name, description, protocol, format, submitContent, uri, displayNodePath, valueNodePath, tlsVersion, useInput);
 		}
 
 		public CheckboxList doFillCheckboxItems(@AncestorInPath Job job, @QueryParameter String name) {
