@@ -7,13 +7,9 @@ package com.bluersw.source;
 
 public enum Protocol {
 	/**
-	 * 通过HTTP协议获取数据 Get data via HTTP protocol
+	 * 通过HTTP或HTTPS协议获取数据 Get data via HTTP or HTTPS protocol
 	 */
-	HTTP,
-	/**
-	 * 通过HTTPS协议获取数据 Get data via HTTPS protocol
-	 */
-	HTTPS,
+	HTTP_HTTPS,
 	/**
 	 * 通过Jenkins服务器的文件系统获取数据 Get data through the file system of the Jenkins server
 	 */

@@ -45,7 +45,6 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 	private static final long serialVersionUID = 5171255336407195201L;
 	private static final Logger LOGGER = Logger.getLogger(CheckboxParameterDefinition.class.getName());
-	private static final String DEFAULT_TLS_VERSION = "TLSv1.2";
 	private static final String DEFAULT_NAME_NODE = "//CheckboxParameter/key";
 	private static final String DEFAULT_VALUE_NODE = "//CheckboxParameter/value";
 
@@ -57,22 +56,20 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	private String uri;
 	private String displayNodePath;
 	private String valueNodePath;
-	private String tlsVersion;
 	private boolean useInput;
 
 	@DataBoundConstructor
 	public CheckboxParameterDefinition(String name, String description, Protocol protocol, Format format,
 			String submitContent, String uri, String displayNodePath,
-			String valueNodePath, String tlsVersion, boolean useInput) {
+			String valueNodePath, boolean useInput) {
 		super(name, description);
 		this.uuid = UUID.randomUUID();
-		this.protocol = protocol == null ? Protocol.HTTP : protocol;
+		this.protocol = protocol == null ? Protocol.HTTP_HTTPS : protocol;
 		this.format = format == null ? Format.Empty : format;
 		this.submitContent = submitContent == null ? "" : submitContent;
 		this.uri = uri == null ? "" : uri;
 		this.displayNodePath = displayNodePath == null ? DEFAULT_NAME_NODE : displayNodePath;
 		this.valueNodePath = valueNodePath == null ? DEFAULT_VALUE_NODE : valueNodePath;
-		this.tlsVersion = tlsVersion == null ? DEFAULT_TLS_VERSION : tlsVersion;
 		this.useInput = useInput;
 		this.defaultValue = "";
 	}
@@ -112,14 +109,6 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.valueNodePath = valueNodePath;
 	}
 
-	public String getTlsVersion() {
-		return this.tlsVersion;
-	}
-
-	@DataBoundSetter
-	public void setTlsVersion(String tlsVersion) {
-		this.tlsVersion = tlsVersion;
-	}
 
 	public String getUri() {
 		return this.uri;
@@ -239,7 +228,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 		else {
 			try {
-				DataSource source = DataSourceFactory.createDataSource(this.protocol, this.uri, this.tlsVersion);
+				DataSource source = DataSourceFactory.createDataSource(this.protocol, this.uri);
 				result.setContent(source.get());
 				result.setSucceed(true);
 				if (source.getStatusCode() != HttpStatus.SC_OK) {
@@ -255,8 +244,8 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 				result.setMessage(String
 						.format("%s: %s", Messages.CheckboxParameterDefinition_GetFileFailed(), exMessage));
 				LOGGER.log(Level.SEVERE, String
-						.format("Failed to get file content: protocol: %s,uri: %s,tlsVersion: %s,exception info: %s"
-								, this.protocol, this.uri, this.tlsVersion, exMessage));
+						.format("Failed to get file content: protocol: %s,uri: %s,exception info: %s"
+								, this.protocol, this.uri, exMessage));
 			}
 		}
 
@@ -366,14 +355,13 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			final String uriName = "uri";
 			final String displayNodePathName = "displayNodePath";
 			final String valueNodePathName = "valueNodePath";
-			final String tlsVersionName = "tlsVersion";
 			final String descriptionName = "description";
 
 			String name = formData.getString("name");
 			String description = formData.get(descriptionName) != null ? formData.getString(descriptionName) : "";
 
 			Protocol protocol = formData.get(protocolName) != null ? Protocol
-					.valueOf(formData.getString(protocolName)) : Protocol.HTTP;
+					.valueOf(formData.getString(protocolName)) : Protocol.HTTP_HTTPS;
 
 			Format format = formData.get(formatName) != null ? Format
 					.valueOf(formData.getString(formatName)) : Format.Empty;
@@ -386,9 +374,6 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			String valueNodePath = formData.get(valueNodePathName) != null ? formData
 					.getString(valueNodePathName) : DEFAULT_VALUE_NODE;
 
-			String tlsVersion = formData.get(tlsVersionName) != null ? formData
-					.getString(tlsVersionName) : DEFAULT_TLS_VERSION;
-
 			boolean useInput = false;
 			String submitContent = "";
 			if (formData.get(useInputName) != null) {
@@ -399,7 +384,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 				}
 			}
 
-			return new CheckboxParameterDefinition(name, description, protocol, format, submitContent, uri, displayNodePath, valueNodePath, tlsVersion, useInput);
+			return new CheckboxParameterDefinition(name, description, protocol, format, submitContent, uri, displayNodePath, valueNodePath, useInput);
 		}
 
 		public CheckboxList doFillCheckboxItems(@AncestorInPath Job job, @QueryParameter String name) {

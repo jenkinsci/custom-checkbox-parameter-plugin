@@ -25,7 +25,6 @@ public class HttpRequest implements DataSource {
 	private final String uri;
 	private String statusLine;
 	private int statusCode;
-	private final String tlsVersion;
 
 	/**
 	 * 通过要请求的URI构建请求对象 Construct the request object by the URI to be requested
@@ -33,17 +32,6 @@ public class HttpRequest implements DataSource {
 	 */
 	public HttpRequest(String uri) {
 		this.uri = uri;
-		this.tlsVersion = "TLSv1.2";
-	}
-
-	/**
-	 * 通过URI和TLS版本构建请求对象 Build request object by URI and TLS version
-	 * @param uri 要请求的URI地址 URL
-	 * @param tlsVersion SSL/TLS版本 默认：TLSv1.2  SSL/TLS version Default: TLSv1.2
-	 */
-	public HttpRequest(String uri, String tlsVersion) {
-		this.uri = uri;
-		this.tlsVersion = "".equals(tlsVersion) ? "TLSv1.2" : tlsVersion;
 	}
 
 	/**
@@ -65,32 +53,16 @@ public class HttpRequest implements DataSource {
 	}
 
 	/**
-	 * 根据HTTP或HTTPS创建CloseableHttpClient对象 Create CloseableHttpClient object based on HTTP or HTTPS
+	 * 创建CloseableHttpClient对象 Create CloseableHttpClient object
 	 * @return CloseableHttpClient对象 CloseableHttpClient
 	 * @throws Exception 异常 Exception
 	 */
 	private CloseableHttpClient createClientByProtocol() throws Exception {
 		final String http = "http";
-		final String https = "https";
 		String lower = this.uri.toLowerCase();
-		if (lower.startsWith(https)) {
-			SSLContext sslcontext = SSLContexts.custom().build();
-			sslcontext.init(null, new X509TrustManager[] {new HttpsTrustManager()}, new SecureRandom());
-
-			SSLConnectionSocketFactory factory = new SSLConnectionSocketFactory(
-					sslcontext,
-					new String[] {this.tlsVersion},
-					null,
-					SSLConnectionSocketFactory.getDefaultHostnameVerifier());
-
-			return HttpClients.custom()
-					.setSSLSocketFactory(factory)
-					.build();
-		}
-		else if (lower.startsWith(http)) {
+		if (lower.startsWith(http)) {
 			return HttpClients.createDefault();
-		}
-		else {
+		}else {
 			throw new IllegalArgumentException("URI needs to start with http or https");
 		}
 	}

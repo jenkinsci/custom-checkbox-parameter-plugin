@@ -28,9 +28,4 @@
 			</f:entry>
 		</f:optionalBlock>
 	</f:block>
-	<f:advanced>
-		<f:entry title="${%parameter.tlsVersion}" field="tlsVersion" description="${%parameter.tlsVersion.description}">
-			<f:textbox default="TLSv1.2"/>
-		</f:entry>
-	</f:advanced>
 </j:jelly>
