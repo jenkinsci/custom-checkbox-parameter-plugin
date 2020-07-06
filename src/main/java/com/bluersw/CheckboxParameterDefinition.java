@@ -59,19 +59,31 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	private boolean useInput;
 
 	@DataBoundConstructor
-	public CheckboxParameterDefinition(String name, String description, Protocol protocol, Format format,
-			String submitContent, String uri, String displayNodePath,
-			String valueNodePath, boolean useInput) {
+	public CheckboxParameterDefinition(String name, String description, Protocol protocol,
+			Format format, String uri, String displayNodePath,
+			String valueNodePath, JSONObject useInput) {
 		super(name, description);
 		this.uuid = UUID.randomUUID();
 		this.protocol = protocol == null ? Protocol.HTTP_HTTPS : protocol;
 		this.format = format == null ? Format.Empty : format;
-		this.submitContent = submitContent == null ? "" : submitContent;
 		this.uri = uri == null ? "" : uri;
 		this.displayNodePath = displayNodePath == null ? DEFAULT_NAME_NODE : displayNodePath;
 		this.valueNodePath = valueNodePath == null ? DEFAULT_VALUE_NODE : valueNodePath;
-		this.useInput = useInput;
+		this.submitContent="";
+		this.useInput=false;
 		this.defaultValue = "";
+
+		this.setUseInputAndSubmitContent(useInput);
+	}
+
+	public void setUseInputAndSubmitContent(JSONObject jsonObject) {
+		if (jsonObject != null) {
+			final String submitContentName = "submitContent";
+			if (jsonObject.get(submitContentName) != null) {
+				this.submitContent = jsonObject.size() == 0 ? "" : jsonObject.getString(submitContentName);
+				this.useInput = isNotBlank(this.submitContent);
+			}
+		}
 	}
 
 	public void setDefaultValue(String defaultValue) {
@@ -87,9 +99,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	}
 
 	@DataBoundSetter
-	public void setUseInput(boolean useInput) {
-		this.useInput = useInput;
-	}
+	public void setUseInput(boolean useInput) { this.useInput = useInput; }
 
 	public String getDisplayNodePath() {
 		return this.displayNodePath;
@@ -348,43 +358,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		 * We need this for JENKINS-26143 -- reflective creation cannot handle setChoices(Object). See that method for context.
 		 */
 		public ParameterDefinition newInstance(@Nullable StaplerRequest req, @NonNull JSONObject formData) {
-			final String protocolName = "protocol";
-			final String formatName = "format";
-			final String useInputName = "useInput";
-			final String submitContentName = "submitContent";
-			final String uriName = "uri";
-			final String displayNodePathName = "displayNodePath";
-			final String valueNodePathName = "valueNodePath";
-			final String descriptionName = "description";
-
-			String name = formData.getString("name");
-			String description = formData.get(descriptionName) != null ? formData.getString(descriptionName) : "";
-
-			Protocol protocol = formData.get(protocolName) != null ? Protocol
-					.valueOf(formData.getString(protocolName)) : Protocol.HTTP_HTTPS;
-
-			Format format = formData.get(formatName) != null ? Format
-					.valueOf(formData.getString(formatName)) : Format.Empty;
-
-			String uri = formData.get(uriName) != null ? formData.getString(uriName) : "";
-
-			String displayNodePath = formData.get(displayNodePathName) != null ? formData
-					.getString(displayNodePathName) : DEFAULT_NAME_NODE;
-
-			String valueNodePath = formData.get(valueNodePathName) != null ? formData
-					.getString(valueNodePathName) : DEFAULT_VALUE_NODE;
-
-			boolean useInput = false;
-			String submitContent = "";
-			if (formData.get(useInputName) != null) {
-				JSONObject useInputObject = formData.getJSONObject(useInputName);
-				if (useInputObject.get(submitContentName) != null) {
-					submitContent = useInputObject.size() == 0 ? "" : useInputObject.getString(submitContentName);
-					useInput = isNotBlank(submitContent);
-				}
-			}
-
-			return new CheckboxParameterDefinition(name, description, protocol, format, submitContent, uri, displayNodePath, valueNodePath, useInput);
+			return req.bindJSON(CheckboxParameterDefinition.class,formData);
 		}
 
 		public CheckboxList doFillCheckboxItems(@AncestorInPath Job job, @QueryParameter String name) {
