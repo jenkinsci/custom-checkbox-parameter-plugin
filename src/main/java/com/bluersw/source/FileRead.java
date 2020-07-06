@@ -1,10 +1,14 @@
 package com.bluersw.source;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
+
+import hudson.FilePath;
+import hudson.remoting.Channel;
 
 /**
  * 文件读取类 File reading class
@@ -28,7 +32,8 @@ public class FileRead implements DataSource {
 
 	@Override
 	public String get() throws Exception {
-		InputStream inputStream = new FileInputStream(this.filePath);
+		FilePath file = new FilePath(Channel.current(),this.filePath);
+		InputStream inputStream = file.read();
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.defaultCharset()))) {
 			final String lineFeed = "\r\n";
 			StringBuilder buffer = new StringBuilder();

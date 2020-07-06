@@ -11,7 +11,7 @@ public enum Protocol {
 	 */
 	HTTP_HTTPS,
 	/**
-	 * 通过Jenkins服务器的文件系统获取数据 Get data through the file system of the Jenkins server
+	 * 通过文件路径获取数据 Get data by file path
 	 */
-	JENKINS_LOCAL
+	FILE_PATH
 }

@@ -15,7 +15,7 @@ public class DataSourceFactory {
 	public static DataSource createDataSource(Protocol protocol, String uri) {
 		if (protocol == Protocol.HTTP_HTTPS) {
 			return new HttpRequest(uri);
-		}else if(protocol == Protocol.JENKINS_LOCAL){
+		}else if(protocol == Protocol.FILE_PATH){
 			return new FileRead(uri);
 		}else {
 			throw new IllegalArgumentException(String.format("Did not implement this protocol. protocol: %s",protocol));
