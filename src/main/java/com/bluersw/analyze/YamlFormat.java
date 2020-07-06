@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 /**
  * 解析YAML格式的内容 Parse content in YAML format
@@ -33,10 +34,10 @@ public class YamlFormat extends AbstractFormat {
 	 * 加载YAML内容并结构化为LinkedHashMap<String, Object>  Load YAML content and structure it as LinkedHashMap<String, Object>
 	 * @return YAML内容的LinkedHashMap<String, Object>结构  LinkedHashMap<String, Object> structure of YAML content
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected LinkedHashMap<String, Object> loadData() {
-		Yaml yaml = new Yaml();
-		return yaml.loadAs(this.content,LinkedHashMap.class);
+		//using safe constructor https://www.appmarq.com/public/security,1039056,Avoid-insecure-use-of-YAML-deserialization-when-using-SnakeYaml-JEE
+		Yaml yaml = new Yaml(new SafeConstructor());
+		return yaml.load(this.content);
 	}
 }
