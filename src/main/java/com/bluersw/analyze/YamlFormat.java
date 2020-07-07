@@ -36,7 +36,7 @@ public class YamlFormat extends AbstractFormat {
 	 */
 	@Override
 	protected LinkedHashMap<String, Object> loadData() {
-		//using safe constructor https://www.appmarq.com/public/security,1039056,Avoid-insecure-use-of-YAML-deserialization-when-using-SnakeYaml-JEE
+		//using safe constructor
 		Yaml yaml = new Yaml(new SafeConstructor());
 		return yaml.load(this.content);
 	}
