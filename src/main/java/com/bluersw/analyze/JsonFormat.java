@@ -30,8 +30,8 @@ public class JsonFormat extends AbstractFormat {
 	}
 
 	/**
-	 * 加载JSON内容并结构化为LinkedHashMap<String, Object>  Load JSON content and structure it as LinkedHashMap<String, Object>
-	 * @return JSON内容的LinkedHashMap<String, Object>结构  LinkedHashMap<String, Object> structure of JSON content
+	 * 加载JSON内容并结构化为LinkedHashMap  Load JSON content and structure it as LinkedHashMap
+	 * @return JSON内容的LinkedHashMap结构  LinkedHashMap structure of JSON content
 	 * @throws Exception 结构转化时可能会抛出异常 Exceptions may be thrown during structural transformation
 	 */
 	@SuppressWarnings("unchecked")

@@ -355,6 +355,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 		@Override
 		public ParameterDefinition newInstance(@Nullable StaplerRequest req, @NonNull JSONObject formData) {
+			assert req != null;
 			return req.bindJSON(CheckboxParameterDefinition.class,formData);
 		}
 

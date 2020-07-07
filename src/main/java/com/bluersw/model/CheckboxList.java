@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import javax.servlet.ServletException;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
@@ -17,6 +18,7 @@ import org.kohsuke.stapler.export.Flavor;
  * 复选框列表JSON对象 Checkbox list JSON object
  * @author sunweisheng
  */
+@SuppressFBWarnings(value = "URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD")
 @ExportedBean
 public class CheckboxList implements HttpResponse {
 

@@ -59,9 +59,9 @@ public abstract class AbstractFormat implements Configuration {
 	}
 
 	/**
-	 * 加载文件中的数据，并转化LinkedHashMap<String,Object>结构 Load the data in the file and convert LinkedHashMap<String, Object> structure
+	 * 加载文件中的数据，并转化LinkedHashMap结构 Load the data in the file and convert LinkedHashMap structure
 	 * @throws Exception 读取数据或结构化数据时可产生异常 Exceptions can occur when reading data or structured data
-	 * @return LinkedHashMap<String,Object>结构数据 LinkedHashMap<String, Object> structure data
+	 * @return LinkedHashMap 结构数据 LinkedHashMap structure data
 	 */
 	protected abstract LinkedHashMap<String,Object> loadData() throws Exception;
 

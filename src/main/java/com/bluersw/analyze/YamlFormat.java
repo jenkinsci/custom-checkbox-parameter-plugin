@@ -31,8 +31,8 @@ public class YamlFormat extends AbstractFormat {
 	}
 
 	/**
-	 * 加载YAML内容并结构化为LinkedHashMap<String, Object>  Load YAML content and structure it as LinkedHashMap<String, Object>
-	 * @return YAML内容的LinkedHashMap<String, Object>结构  LinkedHashMap<String, Object> structure of YAML content
+	 * 加载YAML内容并结构化为LinkedHashMap Load YAML content and structure it as LinkedHashMap
+	 * @return YAML内容的LinkedHashMap结构  LinkedHashMap structure of YAML content
 	 */
 	@Override
 	protected LinkedHashMap<String, Object> loadData() {
