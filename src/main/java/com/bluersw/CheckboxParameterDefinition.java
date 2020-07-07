@@ -76,7 +76,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.setUseInputAndSubmitContent(useInput);
 	}
 
-	public void setUseInputAndSubmitContent(JSONObject jsonObject) {
+	private void setUseInputAndSubmitContent(JSONObject jsonObject) {
 		if (jsonObject != null) {
 			final String submitContentName = "submitContent";
 			if (jsonObject.get(submitContentName) != null) {
@@ -354,9 +354,6 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 
 		@Override
-		/*
-		 * We need this for JENKINS-26143 -- reflective creation cannot handle setChoices(Object). See that method for context.
-		 */
 		public ParameterDefinition newInstance(@Nullable StaplerRequest req, @NonNull JSONObject formData) {
 			return req.bindJSON(CheckboxParameterDefinition.class,formData);
 		}

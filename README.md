@@ -1,6 +1,6 @@
 # Custom Checkbox Parameter Plugin
 
-This plug-in can dynamically create a set of check boxes for users to check before building. The settings of the check boxes are configured through YAML or JSON files, and the file content can be obtained through the file system of HTTP, HTTPS, or Jenkins server.
+This plug-in can dynamically create a set of check boxes for users to check before building. The check box settings are configured through YAML or JSON files, and the file content can be obtained through HTTP, HTTPS, or file paths.
 After checking the check box, the user can use params['ParameterName'] in the build script to get the selected value. The result of the user's selection is returned in the form of a string separated by "," value1, value2, value3.
 
 [中文说明](README_zh.md)
@@ -14,9 +14,9 @@ Parameter Name: Use params['ParameterName'] in the build script to get the value
 
 Description: The description text of the construction parameters.
 
-Use Protocol: HTTP, HTTPS, JENKINS_LOCAL, JENKINS_LOCAL represents the file system of the Jenkins server. If you use the HTTP protocol, you can choose either HTTP or HTTPS, because it can be automatically recognized by the input of the URI.
+Use Protocol: HTTP_HTTPS, FILE_PATH, FILE_PATH represents the file system path, HTTP_HTTPS refers to HTTP or HTTPS protocol.
 
-URI: If the "Use Protocol" option is HTTP and HTTPS, please enter the URL of the file. If the "Use Protocol" option is JENKINS_LOCAL, then please enter the file path of the file on the Jenkins server.
+URI: If the "Use Protocol" option is HTTP_HTTPS, enter the URL of the file for the URI, if the "Use Protocol" option is FILE_PATH, then enter the file path for the URI.
 
 Document Format: supports YAML and JSON formats. (YAML requires spaces to be aligned and spaces after ":")
 
@@ -60,12 +60,6 @@ Value Node Path: Specify the node path for the check box to select the value (th
 After selecting the "Use only the input as the document content" check box, you can directly enter the YAML format or JSON format content of the configuration check box. The content format is set by the "Document Format" option, and the URI will be ignored after directly entering the configuration content Settings.
 
 ![project doc image](images/image-02.png)
-
-After clicking "Advanced", you can configure the TLS Version option. This option is used to query the TLS version set by the remote server when using HTTPS to obtain the remote file, and set the TLS protocol version here to try to solve the problem.
-
-TLS versions are: SSL 1.0, SSL 2.0, SSL 3.0, TLS 1.0, TLS 1.1, TLS 1.2, TLS 1.3
-
-![project doc image](images/image-03.png)
 
 ## Read remote HTTPS configuration checkbox example
 
@@ -116,7 +110,7 @@ In addition: the results of the check boxes selected during each build will be s
 
 ## Other configuration examples
 
-Jenkins server file system:
+Use file system path:
 
 ![project doc image](images/image-06.png)
 
@@ -175,13 +169,12 @@ parameter list:
 
 - name: required
 - description: not required, default ""
-- protocol: not required, HTTP, HTTPS, JENKINS_LOCAL, default HTTP
+- protocol: Not required, HTTP_HTTPS, FILE_PATH, default HTTP_HTTPS
 - format: required, YAML, JSON, default Empty
 - uri: not required, the default is "", if both uri and submitContent are empty, an error will be prompted during the build
 - useInput: not required, default false
 - submitContent: not required, default ""
 - displayNodePath: not required, default //CheckboxParameter/key
 - valueNodePath: not required, default //CheckboxParameter/value
-- tlsVersion: not required, default TLSv1.2
 
 You can create parameters in the build script, but because each execution of the build script creates a new "Custom Checkbox Parameter" build parameter, the last selected value cannot be retained.
