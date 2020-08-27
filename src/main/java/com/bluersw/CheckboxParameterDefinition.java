@@ -1,5 +1,7 @@
 package com.bluersw;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -171,7 +173,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			Map.Entry entry = (Map.Entry) o;
 			if (entry.getKey().toString().startsWith("checkbox_")) {
 				if (Boolean.parseBoolean(entry.getValue().toString())) {
-					result.append(entry.getKey().toString().replace("checkbox_", ""));
+					result.append(decodeBase64(entry.getKey().toString().replace("checkbox_", "")));
 					result.append(',');
 				}
 			}
@@ -292,7 +294,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 				for (int i = 0; i < count; i++) {
 					boolean selected = isExist(defaultValues, values.get(i));
-					checkboxList.add(names.get(i), values.get(i), selected);
+					checkboxList.add(names.get(i), encodeBase64(values.get(i)), selected);
 				}
 			}
 		}
@@ -305,6 +307,24 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 
 		return checkboxList;
+	}
+
+	private static String encodeBase64(String origin){
+		Base64.Encoder encoder = Base64.getEncoder();
+		byte[] originBytes = origin.getBytes(StandardCharsets.UTF_8);
+		return encoder.encodeToString(originBytes);
+	}
+
+	private static String decodeBase64(String origin){
+		Base64.Decoder decoder = Base64.getDecoder();
+		try {
+			return new String(decoder.decode(origin), StandardCharsets.UTF_8);
+		}catch (Exception e){
+			String exMessage = e.getMessage() == null ? e.toString() : e.getMessage();
+			LOGGER.log(Level.SEVERE, String
+					.format("Failed to DecodeBase64,exception info: %s", exMessage));
+			return origin;
+		}
 	}
 
 	@Override

@@ -6,7 +6,9 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 import hudson.FilePath;
+import hudson.model.Executor;
 import hudson.remoting.Channel;
+import hudson.remoting.VirtualChannel;
 
 /**
  * 文件读取类 File reading class
@@ -30,7 +32,14 @@ public class FileRead implements DataSource {
 
 	@Override
 	public String get() throws Exception {
-		FilePath file = new FilePath(Channel.current(),this.filePath);
+		VirtualChannel channel;
+		Executor executor = Executor.currentExecutor();
+		if(executor != null){
+			channel = executor.getOwner().getChannel();
+		}else{
+			channel = Channel.current();
+		}
+		FilePath file = new FilePath(channel,this.filePath);
 		InputStream inputStream = file.read();
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.defaultCharset()))) {
 			final String lineFeed = "\r\n";
