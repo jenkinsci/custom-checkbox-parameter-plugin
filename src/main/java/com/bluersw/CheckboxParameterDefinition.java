@@ -68,9 +68,9 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.uuid = UUID.randomUUID();
 		this.protocol = protocol == null ? Protocol.HTTP_HTTPS : protocol;
 		this.format = format == null ? Format.Empty : format;
-		this.uri = uri == null ? "" : uri;
-		this.displayNodePath = displayNodePath == null ? DEFAULT_NAME_NODE : displayNodePath;
-		this.valueNodePath = valueNodePath == null ? DEFAULT_VALUE_NODE : valueNodePath;
+		this.uri = isNotBlank(uri) ? uri : "";
+		this.displayNodePath = isNotBlank(displayNodePath) ? displayNodePath : DEFAULT_NAME_NODE;
+		this.valueNodePath = isNotBlank(valueNodePath) ? valueNodePath : DEFAULT_VALUE_NODE;
 		this.submitContent="";
 		this.useInput=false;
 		this.defaultValue = "";

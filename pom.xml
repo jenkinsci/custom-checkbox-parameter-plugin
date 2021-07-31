@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.0</version>
+        <version>4.16</version>
         <relativePath />
     </parent>
     <groupId>io.jenkins.plugins</groupId>
@@ -15,7 +15,8 @@
     <description>This plug-in can dynamically create a set of check boxes for users to check before building. The check box settings are configured through YAML or JSON files, and the file content can be obtained through HTTP, HTTPS, or file paths. After checking the check box, the user can use params['ParameterName'] in the build script to get the selected value. The result of the user's selection is returned in the form of a string separated by "," value1, value2, value3.</description>
     <url>https://github.com/jenkinsci/custom-checkbox-parameter-plugin</url>
     <properties>
-        <jenkins.version>2.164.3</jenkins.version>
+        <!--https://www.jenkins.io/doc/developer/plugin-development/updating-parent/-->
+        <jenkins.version>2.277.1</jenkins.version>
         <java.level>8</java.level>
     </properties>
     <licenses>
@@ -54,10 +55,16 @@
             <dependency>
                 <!-- Pick up common dependencies for 2.164.x: https://github.com/jenkinsci/bom#usage -->
                 <groupId>io.jenkins.tools.bom</groupId>
-                <artifactId>bom-2.164.x</artifactId>
-                <version>3</version>
+                <artifactId>bom-2.277.x</artifactId>
+                <version>26</version>
                 <scope>import</scope>
                 <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>4.5.13</version>
+                <scope>compile</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -97,12 +104,6 @@
             <artifactId>rebuild</artifactId>
             <version>1.25</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.13</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.yaml</groupId>

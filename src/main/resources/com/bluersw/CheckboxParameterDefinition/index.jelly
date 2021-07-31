@@ -6,7 +6,7 @@
 	<st:adjunct includes="com.bluersw.CheckboxParameter"/>
 	<f:entry title="${it.name}" description="${it.description}">
 		<div name="parameter" id="${it.divId}" style="white-space:nowrap" >
-			<input type="hidden" name="name" value="${it.name}" />
+			<input type="hidden" name="name" value="${it.name}" id="name_${it.divId}"/>
 		<label style='padding:0 0 0 10px'><input type="checkbox" name="all_checkbox" value="checkall" class="checkbox-all"/>${%parameter.selectAll} </label>
 			<br/>
 			<div id="checkbox_div" style="width:auto;"/>
@@ -14,9 +14,9 @@
 		</div>
 		<script type="text/javascript">
 			var parentDiv = jQuery('#${it.divId}');
+			var nameHidden = parentDiv.find('#name_${it.divId}');
 			var requestBasicUrl = "${h.getCurrentDescriptorByNameUrl()}/${it.descriptor.descriptorUrl}/";
-			var parameterName = '${it.name}';
-			initializationCheckbox(parentDiv,requestBasicUrl,parameterName);
+			initializationCheckbox(parentDiv,requestBasicUrl,nameHidden.val());
 		</script>
 	</f:entry>
 </j:jelly>

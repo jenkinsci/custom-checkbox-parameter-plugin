@@ -18,14 +18,13 @@ public class CheckboxParameterDefinitionTests {
 
 	@Test
 	public void testScriptedPipeline() throws Exception{
-
-		CheckboxParameterDefinition param = new CheckboxParameterDefinition(Name,description,protocol,format,uri,displayNodePath,valueNodePath,useInput);
+		CheckboxParameterDefinition param = new CheckboxParameterDefinition(name,description,protocol,format,"","","",useInput);
 		param.setDefaultValue(defaultValue);
 		WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
 		job.addProperty(new ParametersDefinitionProperty(param));
 		String pipelineScript
 				= "node {\n"
-				+ "  print params['my-checkbox'] \n"
+				+ "  print params['SELECT_NODES'] \n"
 				+ "}";
 		job.setDefinition(new CpsFlowDefinition(pipelineScript, true));
 		WorkflowRun completedBuild = jenkins.assertBuildStatusSuccess(job.scheduleBuild2(0));
