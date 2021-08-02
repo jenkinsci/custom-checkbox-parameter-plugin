@@ -9,7 +9,7 @@
 			<input type="hidden" name="name" value="${it.name}" id="name_${it.divId}"/>
 		<label style='padding:0 0 0 10px'><input type="checkbox" name="all_checkbox" value="checkall" class="checkbox-all"/>${%parameter.selectAll} </label>
 			<br/>
-			<div id="checkbox_div" style="width:auto;"/>
+			<div id="checkbox_div" style="width:80%;word-wrap:break-word;word-break:break-all;"/>
 			<div id="result_message"/>
 		</div>
 		<script type="text/javascript">
