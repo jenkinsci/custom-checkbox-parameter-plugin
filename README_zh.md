@@ -119,61 +119,38 @@ Finished: SUCCESS
 
 ## Declarative Pipeline
 
-[配置文件地址](https://raw.githubusercontent.com/sunweisheng/Jenkins/master/examples/example.json)
-
 配置文件内容：
-
-```json
-CheckboxParameter": [
-    {
-      "key": "j-1",
-      "value": "value-1"
-    },
-    {
-      "key": "j-2",
-      "value": "value-2"
-    },
-    {
-      "key": "j-3",
-      "value": "value-3"
-    }
-  ]
-```
-
-最少的参数：
 
 ```groovy
 pipeline {
-    
-   agent any
-
-   parameters{
-      checkboxParameter name:'my-checkbox', format:'JSON', uri:'https://raw.githubusercontent.com/sunweisheng/Jenkins/master/examples/example.json'
-   }
-   stages {
-      stage('Hello') {
-         steps {
-            print params['my-checkbox']
-         }
-      }
-   }
+    agent any
+    parameters {
+        checkboxParameter(name: 'Platforms1', format: 'JSON',
+                pipelineSubmitContent: '{"CheckboxParameter": [{"key": "nt","value": "nt"},{"key": "linux","value": "linux"},{"key": "unix","value": "unix"}]}', description: '')
+        checkboxParameter(name: 'Platforms2', format: 'YAML',
+                pipelineSubmitContent: "CheckboxParameter: \n  - key: monday\n    value: monday\n  - key: tuesday\n    value: tuesday\n", description: '')
+    }
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+    }
 }
 ```
 
 构建时显示复选框：
 
-![project doc image](images/image-08_zh.png)
+![project doc image](images/image-08-01.png)
 
 参数列表：
 
 - name：必填
 - description：非必填，默认“”
-- protocol：非必填，HTTP_HTTPS、FILE_PATH，默认HTTP_HTTPS
 - format：必填，YAML、JSON，默认Empty
-- uri：非必填，默认“”，如果uri和submitContent都是空，那么构建时会提示错误
-- useInput：非必填，默认false
-- submitContent：非必填，默认“”
 - displayNodePath：非必填，默认//CheckboxParameter/key
 - valueNodePath：非必填，默认//CheckboxParameter/value
+- pipelineSubmitContent: 必填 
 
 可以在构建脚本中创建参数，但因为每次执行构建脚本都会创建一个新的"Custom Checkbox Parameter"构建参数，所以无法保留上次选择的值。

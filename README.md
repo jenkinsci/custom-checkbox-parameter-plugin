@@ -120,61 +120,40 @@ Enter the file content directly (Json format):
 
 ## Declarative Pipeline
 
-[Configuration file address](https://raw.githubusercontent.com/sunweisheng/Jenkins/master/examples/example.json)
+
 
 Configuration file content:
 
-```json
-CheckboxParameter": [
-    {
-      "key": "j-1",
-      "value": "value-1"
-    },
-    {
-      "key": "j-2",
-      "value": "value-2"
-    },
-    {
-      "key": "j-3",
-      "value": "value-3"
-    }
-  ]
-```
-
-Minimum parameters:
-
 ```groovy
 pipeline {
-    
-   agent any
-
-   parameters{
-      checkboxParameter name:'my-checkbox', format:'JSON', uri:'https://raw.githubusercontent.com/sunweisheng/Jenkins/master/examples/example.json'
-   }
-   stages {
-      stage('Hello') {
-         steps {
-            print params['my-checkbox']
-         }
-      }
-   }
+    agent any
+    parameters {
+        checkboxParameter(name: 'Platforms1', format: 'JSON',
+                pipelineSubmitContent: '{"CheckboxParameter": [{"key": "nt","value": "nt"},{"key": "linux","value": "linux"},{"key": "unix","value": "unix"}]}', description: '')
+        checkboxParameter(name: 'Platforms2', format: 'YAML',
+                pipelineSubmitContent: "CheckboxParameter: \n  - key: monday\n    value: monday\n  - key: tuesday\n    value: tuesday\n", description: '')
+    }
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+    }
 }
 ```
 
 Show checkbox during build:
 
-![project doc image](images/image-08.png)
+![project doc image](images/image-08-01.png)
 
 parameter list:
 
 - name: required
 - description: not required, default ""
-- protocol: Not required, HTTP_HTTPS, FILE_PATH, default HTTP_HTTPS
 - format: required, YAML, JSON, default Empty
-- uri: not required, the default is "", if both uri and submitContent are empty, an error will be prompted during the build
-- useInput: not required, default false
-- submitContent: not required, default ""
 - displayNodePath: not required, default //CheckboxParameter/key
-- valueNodePath: not required, default //CheckboxParameter/value
+- valueNodePath: not required, default //CheckboxParameter/value 
+- pipelineSubmitContent: required
 
 You can create parameters in the build script, but because each execution of the build script creates a new "Custom Checkbox Parameter" build parameter, the last selected value cannot be retained.

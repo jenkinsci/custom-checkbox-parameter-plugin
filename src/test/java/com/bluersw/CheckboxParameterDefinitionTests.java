@@ -18,7 +18,7 @@ public class CheckboxParameterDefinitionTests {
 
 	@Test
 	public void testScriptedPipeline() throws Exception{
-		CheckboxParameterDefinition param = new CheckboxParameterDefinition(name,description,protocol,format,"","","",useInput);
+		CheckboxParameterDefinition param = new CheckboxParameterDefinition(name,description,protocol,format,"","","",useInput,"");
 		param.setDefaultValue(defaultValue);
 		WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-scripted-pipeline");
 		job.addProperty(new ParametersDefinitionProperty(param));

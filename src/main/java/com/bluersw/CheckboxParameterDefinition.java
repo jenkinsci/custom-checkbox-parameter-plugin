@@ -63,7 +63,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	@DataBoundConstructor
 	public CheckboxParameterDefinition(String name, String description, Protocol protocol,
 			Format format, String uri, String displayNodePath,
-			String valueNodePath, JSONObject useInput) {
+			String valueNodePath, JSONObject useInput, String pipelineSubmitContent) {
 		super(name, description);
 		this.uuid = UUID.randomUUID();
 		this.protocol = protocol == null ? Protocol.HTTP_HTTPS : protocol;
@@ -71,11 +71,21 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.uri = isNotBlank(uri) ? uri : "";
 		this.displayNodePath = isNotBlank(displayNodePath) ? displayNodePath : DEFAULT_NAME_NODE;
 		this.valueNodePath = isNotBlank(valueNodePath) ? valueNodePath : DEFAULT_VALUE_NODE;
-		this.submitContent="";
-		this.useInput=false;
+		this.submitContent = "";
+		this.useInput = false;
 		this.defaultValue = "";
+		if (isNotBlank(pipelineSubmitContent)) {
+			this.setPipelineSubmitContent(pipelineSubmitContent);
+		} else {
+			this.setUseInputAndSubmitContent(useInput);
+		}
+	}
 
-		this.setUseInputAndSubmitContent(useInput);
+	private void setPipelineSubmitContent(String submitContent){
+		if (isNotBlank(submitContent)) {
+			this.submitContent = submitContent;
+			this.useInput = true;
+		}
 	}
 
 	private void setUseInputAndSubmitContent(JSONObject jsonObject) {
