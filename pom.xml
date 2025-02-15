@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>4.16</version>
+        <version>4.51</version>
         <relativePath />
     </parent>
     <groupId>io.jenkins.plugins</groupId>
@@ -15,9 +15,10 @@
     <description>This plug-in can dynamically create a set of check boxes for users to check before building. The check box settings are configured through YAML or JSON files, and the file content can be obtained through HTTP, HTTPS, or file paths. After checking the check box, the user can use params['ParameterName'] in the build script to get the selected value. The result of the user's selection is returned in the form of a string separated by "," value1, value2, value3.</description>
     <url>https://github.com/jenkinsci/custom-checkbox-parameter-plugin</url>
     <properties>
+        <!-- https://www.jenkins.io/doc/developer/plugin-development/choosing-jenkins-baseline/ -->
+        <jenkins.baseline>2.346</jenkins.baseline>
         <!--https://www.jenkins.io/doc/developer/plugin-development/updating-parent/-->
-        <jenkins.version>2.277.1</jenkins.version>
-        <java.level>8</java.level>
+        <jenkins.version>${jenkins.baseline}.3</jenkins.version>
     </properties>
     <licenses>
         <license>
@@ -25,15 +26,8 @@
             <url>https://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
-    <developers>
-        <developer>
-            <id>bluersw</id>
-            <name>SunWeiSheng</name>
-            <email>sunweisheng@live.cn</email>
-        </developer>
-    </developers>
     <scm>
-        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+        <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
         <tag>HEAD</tag>
@@ -55,8 +49,8 @@
             <dependency>
                 <!-- Pick up common dependencies for 2.164.x: https://github.com/jenkinsci/bom#usage -->
                 <groupId>io.jenkins.tools.bom</groupId>
-                <artifactId>bom-2.277.x</artifactId>
-                <version>26</version>
+                <artifactId>bom-${jenkins.baseline}.x</artifactId>
+                <version>1763.v092b_8980a_f5e</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -66,7 +60,6 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.28.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -102,7 +95,6 @@
         <dependency>
             <groupId>com.sonyericsson.hudson.plugins.rebuild</groupId>
             <artifactId>rebuild</artifactId>
-            <version>1.25</version>
             <optional>true</optional>
         </dependency>
         <dependency>

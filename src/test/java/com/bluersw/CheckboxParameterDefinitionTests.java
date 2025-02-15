@@ -10,8 +10,6 @@ import org.jvnet.hudson.test.JenkinsRule;
 
 import static com.bluersw.Constants.*;
 
-import static org.junit.Assert.*;
-
 public class CheckboxParameterDefinitionTests {
 	@Rule
 	public JenkinsRule jenkins = new JenkinsRule();
