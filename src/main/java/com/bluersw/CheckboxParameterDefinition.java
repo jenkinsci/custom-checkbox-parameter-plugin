@@ -35,7 +35,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import static org.apache.commons.lang.StringUtils.*;
 
@@ -177,7 +177,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	@CheckForNull
 	@Override
 	@SuppressWarnings("rawtypes")
-	public ParameterValue createValue(StaplerRequest staplerRequest, JSONObject jsonObject) {
+	public ParameterValue createValue(StaplerRequest2 staplerRequest, JSONObject jsonObject) {
 		StringBuilder result = new StringBuilder();
 		for (Object o : jsonObject.entrySet()) {
 			Map.Entry entry = (Map.Entry) o;
@@ -200,7 +200,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 	@CheckForNull
 	@Override
-	public ParameterValue createValue(StaplerRequest staplerRequest) {
+	public ParameterValue createValue(StaplerRequest2 staplerRequest) {
 		String[] value = staplerRequest.getParameterValues(this.getName());
 		if (value == null || value.length == 0 || isBlank(value[0])) {
 			return this.getDefaultParameterValue();
@@ -384,7 +384,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 
 		@Override
-		public ParameterDefinition newInstance(@Nullable StaplerRequest req, @NonNull JSONObject formData) {
+		public ParameterDefinition newInstance(@Nullable StaplerRequest2 req, @NonNull JSONObject formData) {
 			assert req != null;
 			return req.bindJSON(CheckboxParameterDefinition.class,formData);
 		}
