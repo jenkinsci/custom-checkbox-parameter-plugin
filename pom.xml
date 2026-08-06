@@ -9,12 +9,14 @@
     </parent>
     <groupId>io.jenkins.plugins</groupId>
     <artifactId>custom-checkbox-parameter</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>${revision}.${changelist}</version>
     <packaging>hpi</packaging>
     <name>Custom Checkbox Parameter Plug-In</name>
     <description>This plug-in can dynamically create a set of check boxes for users to check before building. The check box settings are configured through YAML or JSON files, and the file content can be obtained through HTTP, HTTPS, or file paths. After checking the check box, the user can use params['ParameterName'] in the build script to get the selected value. The result of the user's selection is returned in the form of a string separated by "," value1, value2, value3.</description>
     <url>https://github.com/jenkinsci/custom-checkbox-parameter-plugin</url>
     <properties>
+        <revision>1</revision>
+        <changelist>999999-SNAPSHOT</changelist>
         <jenkins.baseline>2.541</jenkins.baseline>
         <jenkins.version>${jenkins.baseline}.3</jenkins.version>
         <plugin-bom.version>6783.v88c6c30f4b_db_</plugin-bom.version>
