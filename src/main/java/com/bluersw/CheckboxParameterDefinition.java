@@ -37,7 +37,6 @@ import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import static org.apache.commons.lang.StringUtils.*;
 
 /**
  * 自定义复选框构建参数定义类 Custom check box construction parameter definition class
@@ -68,13 +67,13 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.uuid = UUID.randomUUID();
 		this.protocol = protocol == null ? Protocol.HTTP_HTTPS : protocol;
 		this.format = format == null ? Format.Empty : format;
-		this.uri = isNotBlank(uri) ? uri : "";
-		this.displayNodePath = isNotBlank(displayNodePath) ? displayNodePath : DEFAULT_NAME_NODE;
-		this.valueNodePath = isNotBlank(valueNodePath) ? valueNodePath : DEFAULT_VALUE_NODE;
+		this.uri = (uri != null && !uri.trim().isEmpty()) ? uri : "";
+		this.displayNodePath = (displayNodePath != null && !displayNodePath.trim().isEmpty()) ? displayNodePath : DEFAULT_NAME_NODE;
+		this.valueNodePath = (valueNodePath != null && !valueNodePath.trim().isEmpty()) ? valueNodePath : DEFAULT_VALUE_NODE;
 		this.submitContent = "";
 		this.useInput = false;
 		this.defaultValue = "";
-		if (isNotBlank(pipelineSubmitContent)) {
+		if ((pipelineSubmitContent != null && !pipelineSubmitContent.trim().isEmpty())) {
 			this.setPipelineSubmitContent(pipelineSubmitContent);
 		} else {
 			this.setUseInputAndSubmitContent(useInput);
@@ -82,7 +81,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	}
 
 	private void setPipelineSubmitContent(String submitContent){
-		if (isNotBlank(submitContent)) {
+		if ((submitContent != null && !submitContent.trim().isEmpty())) {
 			this.submitContent = submitContent;
 			this.useInput = true;
 		}
@@ -93,7 +92,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			final String submitContentName = "submitContent";
 			if (jsonObject.get(submitContentName) != null) {
 				this.submitContent = jsonObject.size() == 0 ? "" : jsonObject.getString(submitContentName);
-				this.useInput = isNotBlank(this.submitContent);
+				this.useInput = this.submitContent != null && !this.submitContent.trim().isEmpty();
 			}
 		}
 	}
@@ -202,7 +201,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	@Override
 	public ParameterValue createValue(StaplerRequest staplerRequest) {
 		String[] value = staplerRequest.getParameterValues(this.getName());
-		if (value == null || value.length == 0 || isBlank(value[0])) {
+		if (value == null || value.length == 0 || (value[0] == null || value[0].trim().isEmpty())) {
 			return this.getDefaultParameterValue();
 		}
 		else {
@@ -212,7 +211,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 	@Override
 	public ParameterValue createValue(CLICommand command, String value) {
-		if (isNotEmpty(value)) {
+		if (value != null && !value.isEmpty()) {
 			return new CheckboxParameterValue(this.getName(), value);
 		}
 		return getDefaultParameterValue();
@@ -350,28 +349,28 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 
 		public FormValidation doCheckName(@QueryParameter String name) {
-			if (isBlank(name)) {
+			if ((name == null || name.trim().isEmpty())) {
 				return FormValidation.error(Messages.CheckboxParameterDefinition_Name_IsBlank());
 			}
 			return FormValidation.ok();
 		}
 
 		public FormValidation doCheckDisplayNodePath(@QueryParameter String displayNodePath) {
-			if (isBlank(displayNodePath)) {
+			if ((displayNodePath == null || displayNodePath.trim().isEmpty())) {
 				return FormValidation.error(Messages.CheckboxParameterDefinition_DisplayNodePath_IsBlank());
 			}
 			return FormValidation.ok();
 		}
 
 		public FormValidation doCheckValueNodePath(@QueryParameter String valueNodePath) {
-			if (isBlank(valueNodePath)) {
+			if ((valueNodePath == null || valueNodePath.trim().isEmpty())) {
 				return FormValidation.error(Messages.CheckboxParameterDefinition_ValueNodePath_IsBlank());
 			}
 			return FormValidation.ok();
 		}
 
 		public FormValidation doCheckTlsVersion(@QueryParameter String tlsVersion) {
-			if (isBlank(tlsVersion)) {
+			if ((tlsVersion == null || tlsVersion.trim().isEmpty())) {
 				return FormValidation.error(Messages.CheckboxParameterDefinition_TlsVersion_IsBlank());
 			}
 			return FormValidation.ok();
