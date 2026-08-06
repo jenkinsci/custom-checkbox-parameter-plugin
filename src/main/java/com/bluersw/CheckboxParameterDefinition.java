@@ -55,7 +55,9 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	private String uri;
 	private String displayNodePath;
 	private String valueNodePath;
+	private String checkedNodePath;
 	private boolean useInput;
+	private boolean selectionSubmitted;
 
 	@DataBoundConstructor
 	public CheckboxParameterDefinition(String name, String description, Protocol protocol,
@@ -68,9 +70,11 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		this.uri = (uri != null && !uri.trim().isEmpty()) ? uri : "";
 		this.displayNodePath = (displayNodePath != null && !displayNodePath.trim().isEmpty()) ? displayNodePath : DEFAULT_NAME_NODE;
 		this.valueNodePath = (valueNodePath != null && !valueNodePath.trim().isEmpty()) ? valueNodePath : DEFAULT_VALUE_NODE;
+		this.checkedNodePath = Messages.CheckboxParameterDefinition_CheckedNodePath_Default();
 		this.submitContent = "";
 		this.useInput = false;
 		this.defaultValue = "";
+		this.selectionSubmitted = false;
 		if ((pipelineSubmitContent != null && !pipelineSubmitContent.trim().isEmpty())) {
 			this.setPipelineSubmitContent(pipelineSubmitContent);
 		} else {
@@ -96,7 +100,8 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	}
 
 	public void setDefaultValue(String defaultValue) {
-		this.defaultValue = defaultValue;
+		this.defaultValue = defaultValue == null ? "" : defaultValue;
+		this.selectionSubmitted = true;
 	}
 
 	public String getDefaultValue() {
@@ -126,6 +131,20 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	@DataBoundSetter
 	public void setValueNodePath(String valueNodePath) {
 		this.valueNodePath = valueNodePath;
+	}
+
+	public String getCheckedNodePath() {
+		if (this.checkedNodePath == null || this.checkedNodePath.trim().isEmpty()) {
+			return Messages.CheckboxParameterDefinition_CheckedNodePath_Default();
+		}
+		return this.checkedNodePath;
+	}
+
+	@DataBoundSetter
+	public void setCheckedNodePath(String checkedNodePath) {
+		this.checkedNodePath = (checkedNodePath != null && !checkedNodePath.trim().isEmpty())
+				? checkedNodePath
+				: Messages.CheckboxParameterDefinition_CheckedNodePath_Default();
 	}
 
 
@@ -191,10 +210,10 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 
 		if (result.toString().length() > 0) {
-			this.defaultValue = result.toString().substring(0, result.toString().length() - 1);
+			this.setDefaultValue(result.toString().substring(0, result.toString().length() - 1));
 		}
 		else {
-			this.defaultValue = "";
+			this.setDefaultValue("");
 		}
 		return new CheckboxParameterValue(jsonObject.getString("name"), this.defaultValue);
 	}
@@ -283,6 +302,21 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		return false;
 	}
 
+	private void validateCheckedValues(List<String> checkedValues, int checkboxCount) {
+		if (checkedValues.isEmpty()) {
+			return;
+		}
+		if (checkedValues.size() != checkboxCount) {
+			throw new IllegalArgumentException(Messages.CheckboxParameterDefinition_CheckedValues_Invalid());
+		}
+		for (String checkedValue : checkedValues) {
+			if (!Boolean.TRUE.toString().equalsIgnoreCase(checkedValue)
+					&& !Boolean.FALSE.toString().equalsIgnoreCase(checkedValue)) {
+				throw new IllegalArgumentException(Messages.CheckboxParameterDefinition_CheckedValues_Invalid());
+			}
+		}
+	}
+
 	/**
 	 * 根据文件内容创建复选框列表 Create checkbox list based on file content
 	 * @return 复选框列表 Checkbox list
@@ -298,12 +332,17 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 				Configuration config = ConfigurationFactory.createConfiguration(this.format, fileContent.getContent());
 				List<String> names = config.getValueListBySearch(this.displayNodePath);
 				List<String> values = config.getValueListBySearch(this.valueNodePath);
+				List<String> checkedValues = config.getValueListBySearch(this.getCheckedNodePath());
 				String[] defaultValues = this.defaultValue.split(",");
 
 				int count = Math.min(names.size(), values.size());
+				validateCheckedValues(checkedValues, count);
+				boolean usePreviousSelection = this.selectionSubmitted || !this.defaultValue.isEmpty();
 
 				for (int i = 0; i < count; i++) {
-					boolean selected = isExist(defaultValues, values.get(i));
+					boolean selected = usePreviousSelection
+							? isExist(defaultValues, values.get(i))
+							: !checkedValues.isEmpty() && Boolean.parseBoolean(checkedValues.get(i));
 					checkboxList.add(names.get(i), encodeBase64(values.get(i)), selected);
 				}
 			}
@@ -366,6 +405,13 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		public FormValidation doCheckValueNodePath(@QueryParameter String valueNodePath) {
 			if ((valueNodePath == null || valueNodePath.trim().isEmpty())) {
 				return FormValidation.error(Messages.CheckboxParameterDefinition_ValueNodePath_IsBlank());
+			}
+			return FormValidation.ok();
+		}
+
+		public FormValidation doCheckCheckedNodePath(@QueryParameter String checkedNodePath) {
+			if ((checkedNodePath == null || checkedNodePath.trim().isEmpty())) {
+				return FormValidation.error(Messages.CheckboxParameterDefinition_CheckedNodePath_IsBlank());
 			}
 			return FormValidation.ok();
 		}

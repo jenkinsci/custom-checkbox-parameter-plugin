@@ -24,10 +24,13 @@ YAML格式和JSON格式示例如下:
 CheckboxParameter:
   - key: key-1
     value: value-1
+    checked: true
   - key: key-2
     value: value-2
+    checked: false
   - key: key-3
     value: value-3
+    checked: true
 ```
 
 ```json
@@ -35,15 +38,18 @@ CheckboxParameter:
     "CheckboxParameter": [
     {
       "key": "key-1",
-      "value": "value-1"
+      "value": "value-1",
+      "checked": true
     },
     {
       "key": "key-2",
-      "value": "value-2"
+      "value": "value-2",
+      "checked": false
     },
     {
       "key": "key-3",
-      "value": "value-3"
+      "value": "value-3",
+      "checked": true
     }
   ]
 }
@@ -52,6 +58,10 @@ CheckboxParameter:
 显示节点路径：指定用于复选框显示内容的节点路径（不同格式通用此路径格式），文件中节点的根用"//"表示，子节点之间用"/"分割，默认是：//CheckboxParameter/key，对应上面的示例选取的内容是：key-1、key-2、key-3，可根据此模式自定义节点路径。
 
 值节点路径：指定用于复选框选择值的节点路径（不同格式通用此路径格式），文件中节点的根用"//"表示，子节点之间用"/"分割，默认是：//CheckboxParameter/value，对应上面的示例选取的内容是：value-1、value-2、value-3，可根据此模式自定义节点路径。
+
+默认选中状态节点路径：指定复选框初始选中状态的节点路径，默认是 `//CheckboxParameter/checked`。使用 `checked` 时，每个复选框都必须填写 `true` 或 `false`。原来不包含该节点的配置文件仍然可以使用，初始状态为全部不选中。
+
+对于保存在任务配置中的参数，首次显示时使用配置文件中的 `checked`。用户提交过构建表单后，以上一次选择为准，包括用户主动取消全部复选框的情况。
 
 ## 其他设置说明
 
@@ -69,10 +79,13 @@ CheckboxParameter:
 CheckboxParameter:
   - key: y-1
     value: value-1
+    checked: true
   - key: y-2
     value: value-2
+    checked: false
   - key: y-3
     value: value-3
+    checked: true
 ```
 
 ![project doc image](images/image-04_zh.png)
@@ -126,9 +139,9 @@ pipeline {
     agent any
     parameters {
         checkboxParameter(name: 'Platforms1', format: 'JSON',
-                pipelineSubmitContent: '{"CheckboxParameter": [{"key": "nt","value": "nt"},{"key": "linux","value": "linux"},{"key": "unix","value": "unix"}]}', description: '')
+                pipelineSubmitContent: '{"CheckboxParameter": [{"key": "nt","value": "nt","checked": true},{"key": "linux","value": "linux","checked": false},{"key": "unix","value": "unix","checked": true}]}', description: '')
         checkboxParameter(name: 'Platforms2', format: 'YAML',
-                pipelineSubmitContent: "CheckboxParameter: \n  - key: monday\n    value: monday\n  - key: tuesday\n    value: tuesday\n", description: '')
+                pipelineSubmitContent: "CheckboxParameter: \n  - key: monday\n    value: monday\n    checked: true\n  - key: tuesday\n    value: tuesday\n    checked: false\n", description: '')
     }
     stages {
         stage('Hello') {
@@ -151,6 +164,27 @@ pipeline {
 - format：必填，YAML、JSON，默认Empty
 - displayNodePath：非必填，默认//CheckboxParameter/key
 - valueNodePath：非必填，默认//CheckboxParameter/value
+- checkedNodePath：非必填，默认//CheckboxParameter/checked
 - pipelineSubmitContent: 必填 
 
 可以在构建脚本中创建参数，但因为每次执行构建脚本都会创建一个新的"Custom Checkbox Parameter"构建参数，所以无法保留上次选择的值。
+
+## Jenkins Job Builder
+
+Jenkins Job Builder YAML 用于描述 Jenkins 任务，它与本插件读取的复选框内容 YAML 不是同一种配置。Jenkins Job Builder 目前没有提供 `custom-checkbox` 参数类型，因此不能把 `CheckboxParameter:` 与 `parameters:` 并列，`jenkins-jobs update` 会拒绝这种写法。
+
+目前请使用 Jenkins 页面配置或 Declarative Pipeline。Pipeline 中需要通过 `pipelineSubmitContent` 传入复选框内容：
+
+```groovy
+parameters {
+    checkboxParameter(name: 'Platforms', format: 'YAML',
+            pipelineSubmitContent: '''CheckboxParameter:
+  - key: linux
+    value: linux
+    checked: true
+  - key: windows
+    value: windows
+    checked: false
+''', description: '')
+}
+```
