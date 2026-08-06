@@ -3,12 +3,11 @@ package com.bluersw.model;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.servlet.ServletException;
-
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import jakarta.servlet.ServletException;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.StaplerRequest2;
+import org.kohsuke.stapler.StaplerResponse2;
 import org.kohsuke.stapler.export.ExportConfig;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
@@ -24,8 +23,7 @@ public class CheckboxList implements HttpResponse {
 
 	@Exported
 	public ArrayList<CheckboxModel> list = new ArrayList<>();
-	@Exported
-	public String message = "";
+	private String message = "";
 
 	/**
 	 * 添加一个复选框 Add a checkbox
@@ -44,8 +42,11 @@ public class CheckboxList implements HttpResponse {
 	 */
 	public void setMessage(String message){this.message = message;}
 
+	@Exported
+	public String getMessage() { return this.message; }
+
 	@Override
-	public void generateResponse(StaplerRequest staplerRequest, StaplerResponse staplerResponse, Object o) throws IOException, ServletException {
+	public void generateResponse(StaplerRequest2 staplerRequest, StaplerResponse2 staplerResponse, Object o) throws IOException, ServletException {
 		ExportConfig ec = new ExportConfig();
 		ec.withFlavor(Flavor.JSON);
 		staplerResponse.serveExposedBean(staplerRequest,this, ec);

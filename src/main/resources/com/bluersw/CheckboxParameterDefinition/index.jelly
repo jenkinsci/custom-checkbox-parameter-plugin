@@ -2,21 +2,16 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define"
 		 xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form"
 		 xmlns:i="jelly:fmt" xmlns:p="/lib/hudson/project">
-	<st:adjunct includes="com.bluersw.jquery"/>
 	<st:adjunct includes="com.bluersw.CheckboxParameter"/>
 	<f:entry title="${it.name}" description="${it.description}">
-		<div name="parameter" id="${it.divId}" style="white-space:nowrap" >
-			<input type="hidden" name="name" value="${it.name}" id="name_${it.divId}"/>
-		<label style='padding:0 0 0 10px'><input type="checkbox" name="all_checkbox" value="checkall" class="checkbox-all"/>${%parameter.selectAll} </label>
+		<div name="parameter" id="${it.divId}" class="custom-checkbox-parameter" style="white-space:nowrap"
+			 data-checkbox-url="${h.getCurrentDescriptorByNameUrl()}/${it.descriptor.descriptorUrl}/fillCheckboxItems"
+			 data-parameter-name="${it.name}">
+			<input type="hidden" name="name" value="${it.name}"/>
+			<label style='padding:0 0 0 10px'><input type="checkbox" name="all_checkbox" value="checkall" class="checkbox-all"/>${%parameter.selectAll} </label>
 			<br/>
-			<div id="checkbox_div" style="width:80%;word-wrap:break-word;word-break:break-all;"/>
-			<div id="result_message"/>
+			<div class="checkbox-items" style="width:80%;word-wrap:break-word;word-break:break-all;"/>
+			<div class="checkbox-result-message"/>
 		</div>
-		<script type="text/javascript">
-			var parentDiv = jQuery('#${it.divId}');
-			var nameHidden = parentDiv.find('#name_${it.divId}');
-			var requestBasicUrl = "${h.getCurrentDescriptorByNameUrl()}/${it.descriptor.descriptorUrl}/";
-			initializationCheckbox(parentDiv,requestBasicUrl,nameHidden.val());
-		</script>
 	</f:entry>
 </j:jelly>

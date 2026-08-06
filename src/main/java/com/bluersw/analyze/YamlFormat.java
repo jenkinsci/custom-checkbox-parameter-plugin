@@ -3,6 +3,7 @@ package com.bluersw.analyze;
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
@@ -37,7 +38,7 @@ public class YamlFormat extends AbstractFormat {
 	@Override
 	protected LinkedHashMap<String, Object> loadData() {
 		//using safe constructor
-		Yaml yaml = new Yaml(new SafeConstructor());
+		Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
 		return yaml.load(this.content);
 	}
 }

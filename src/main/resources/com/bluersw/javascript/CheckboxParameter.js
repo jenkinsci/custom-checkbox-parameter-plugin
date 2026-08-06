@@ -1,24 +1,38 @@
-jQuery.noConflict();
+Behaviour.specify(".custom-checkbox-parameter", "custom-checkbox-parameter", 0, function (container) {
+	const checkboxItems = container.querySelector(".checkbox-items");
+	const message = container.querySelector(".checkbox-result-message");
+	const selectAll = container.querySelector(".checkbox-all");
+	const requestUrl = new URL(container.dataset.checkboxUrl, window.location.href);
+	requestUrl.searchParams.set("name", container.dataset.parameterName);
 
-function initializationCheckbox(parentDiv,requestBasicUrl,parameterName){
-	var checkboxDiv = parentDiv.find('#checkbox_div');
-	var messageD = parentDiv.find('#result_message');
-	var checkbox_request = requestBasicUrl+'fillCheckboxItems?name='+parameterName;
-	jQuery.ajax({
-				type: "GET",
-				url: checkbox_request,
-				contentType: "application/json; charset=utf-8",
-				success: function(result){
-				for(i=0;i<result.list.length;i++){
-					checkboxDiv.append("<label style='padding:10px 10px 10px 10px;float:left;'><input type='checkbox' " + result.list[i].checked + " name='checkbox_" + result.list[i].value  + "'>" + result.list[i].name + "</input></label>");
-				}
-					messageD.text(result.message);
-				}});
+	fetch(requestUrl, {headers: {Accept: "application/json"}})
+		.then(function (response) {
+			if (!response.ok) {
+				throw new Error(response.statusText);
+			}
+			return response.json();
+		})
+		.then(function (result) {
+			result.list.forEach(function (item) {
+				const label = document.createElement("label");
+				const checkbox = document.createElement("input");
+				label.style.cssText = "padding:10px;float:left;";
+				checkbox.type = "checkbox";
+				checkbox.name = "checkbox_" + item.value;
+				checkbox.checked = item.checked === "checked";
+				label.appendChild(checkbox);
+				label.appendChild(document.createTextNode(item.name));
+				checkboxItems.appendChild(label);
+			});
+			message.textContent = result.message;
+		})
+		.catch(function (error) {
+			message.textContent = error.message;
+		});
 
-	var checkbox_all = parentDiv.find('.checkbox-all');
-	checkbox_all.bind('click', function(){
-		var checkbox_all_checked = this.checked
-		checkboxDiv.find(":checkbox").each(function(index, item){
-		item.checked = checkbox_all_checked;})
+	selectAll.addEventListener("click", function () {
+		checkboxItems.querySelectorAll("input[type='checkbox']").forEach(function (checkbox) {
+			checkbox.checked = selectAll.checked;
+		});
 	});
-}
+});
