@@ -21,6 +21,9 @@
 	<f:entry title="${%parameter.valueNodePath}" field="valueNodePath">
 		<f:textbox default="//CheckboxParameter/value"/>
 	</f:entry>
+	<f:entry title="${%parameter.checkedNodePath}" field="checkedNodePath">
+		<f:textbox default="${%parameter.checkedNodePath.default}"/>
+	</f:entry>
 	<f:block>
 		<f:optionalBlock name="useInput" title="${%parameter.useInput}" field="useInput" >
 			<f:entry title="${%parameter.submitContent}" field="submitContent">

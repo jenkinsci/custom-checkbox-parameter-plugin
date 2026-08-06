@@ -3,7 +3,10 @@ package com.bluersw;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
+import com.bluersw.analyze.Format;
+import com.bluersw.model.CheckboxList;
 import hudson.model.ParametersDefinitionProperty;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import org.jenkinsci.plugins.structs.describable.UninstantiatedDescribable;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
@@ -12,6 +15,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.kohsuke.stapler.StaplerRequest2;
 
 import static com.bluersw.Constants.*;
 
@@ -59,5 +63,130 @@ public class CheckboxParameterDefinitionTests {
 			assertTrue(jelly.contains("data-checkbox-url"));
 			assertTrue(jelly.contains("data-parameter-name"));
 		}
+	}
+
+	@Test
+	public void testYamlCheckedValuesProvideInitialSelection() {
+		String content = "CheckboxParameter:\n"
+				+ "  - key: linux\n"
+				+ "    value: linux\n"
+				+ "    checked: true\n"
+				+ "  - key: windows\n"
+				+ "    value: windows\n"
+				+ "    checked: false\n";
+		CheckboxParameterDefinition param = createInlineParameter(Format.YAML, content);
+
+		CheckboxList checkboxList = param.getCheckboxList();
+
+		assertEquals("checked", checkboxList.list.get(0).checked);
+		assertEquals("", checkboxList.list.get(1).checked);
+	}
+
+	@Test
+	public void testJsonCheckedValuesProvideInitialSelection() {
+		String content = "{\"CheckboxParameter\":["
+				+ "{\"key\":\"linux\",\"value\":\"linux\",\"checked\":true},"
+				+ "{\"key\":\"windows\",\"value\":\"windows\",\"checked\":false}]}";
+		CheckboxParameterDefinition param = createInlineParameter(Format.JSON, content);
+
+		CheckboxList checkboxList = param.getCheckboxList();
+
+		assertEquals("checked", checkboxList.list.get(0).checked);
+		assertEquals("", checkboxList.list.get(1).checked);
+	}
+
+	@Test
+	public void testPreviousSelectionOverridesConfiguredCheckedValues() {
+		String content = "CheckboxParameter:\n"
+				+ "  - key: linux\n"
+				+ "    value: linux\n"
+				+ "    checked: true\n"
+				+ "  - key: windows\n"
+				+ "    value: windows\n"
+				+ "    checked: false\n";
+		CheckboxParameterDefinition param = createInlineParameter(Format.YAML, content);
+		param.setDefaultValue("windows");
+
+		CheckboxList checkboxList = param.getCheckboxList();
+
+		assertEquals("", checkboxList.list.get(0).checked);
+		assertEquals("checked", checkboxList.list.get(1).checked);
+	}
+
+	@Test
+	public void testEmptyPreviousSelectionDoesNotRestoreConfiguredDefaults() {
+		String content = "CheckboxParameter:\n"
+				+ "  - key: linux\n"
+				+ "    value: linux\n"
+				+ "    checked: true\n";
+		CheckboxParameterDefinition param = createInlineParameter(Format.YAML, content);
+		JSONObject submittedValue = new JSONObject();
+		submittedValue.put("name", name);
+		param.createValue((StaplerRequest2) null, submittedValue);
+
+		CheckboxList checkboxList = param.getCheckboxList();
+
+		assertEquals("", checkboxList.list.get(0).checked);
+	}
+
+	@Test
+	public void testConfigurationWithoutCheckedValuesRemainsSupported() {
+		String content = "CheckboxParameter:\n"
+				+ "  - key: linux\n"
+				+ "    value: linux\n";
+		CheckboxParameterDefinition param = createInlineParameter(Format.YAML, content);
+
+		CheckboxList checkboxList = param.getCheckboxList();
+
+		assertEquals("", checkboxList.list.get(0).checked);
+	}
+
+	@Test
+	public void testCustomCheckedNodePath() {
+		String content = "CheckboxParameter:\n"
+				+ "  - key: linux\n"
+				+ "    value: linux\n"
+				+ "    selected: true\n";
+		CheckboxParameterDefinition param = createInlineParameter(Format.YAML, content);
+		param.setCheckedNodePath("//CheckboxParameter/selected");
+
+		CheckboxList checkboxList = param.getCheckboxList();
+
+		assertEquals("checked", checkboxList.list.get(0).checked);
+	}
+
+	@Test
+	public void testCheckedValueMustBePresentForEveryCheckbox() {
+		String content = "CheckboxParameter:\n"
+				+ "  - key: linux\n"
+				+ "    value: linux\n"
+				+ "    checked: true\n"
+				+ "  - key: windows\n"
+				+ "    value: windows\n";
+		CheckboxParameterDefinition param = createInlineParameter(Format.YAML, content);
+
+		CheckboxList checkboxList = param.getCheckboxList();
+
+		assertTrue(checkboxList.list.isEmpty());
+		assertTrue(checkboxList.getMessage().contains("true or false"));
+	}
+
+	@Test
+	public void testCheckedValueMustBeBoolean() {
+		String content = "CheckboxParameter:\n"
+				+ "  - key: linux\n"
+				+ "    value: linux\n"
+				+ "    checked: invalid\n";
+		CheckboxParameterDefinition param = createInlineParameter(Format.YAML, content);
+
+		CheckboxList checkboxList = param.getCheckboxList();
+
+		assertTrue(checkboxList.list.isEmpty());
+		assertTrue(checkboxList.getMessage().contains("true or false"));
+	}
+
+	private CheckboxParameterDefinition createInlineParameter(Format documentFormat, String content) {
+		return new CheckboxParameterDefinition(
+				name, description, protocol, documentFormat, "", "", "", null, content);
 	}
 }

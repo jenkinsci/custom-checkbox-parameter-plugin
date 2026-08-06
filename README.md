@@ -26,10 +26,13 @@ Examples of YAML format and JSON format are as follows:
 CheckboxParameter:
   - key: key-1
     value: value-1
+    checked: true
   - key: key-2
     value: value-2
+    checked: false
   - key: key-3
     value: value-3
+    checked: true
 ```
 
 ```json
@@ -37,15 +40,18 @@ CheckboxParameter:
     "CheckboxParameter": [
     {
       "key": "key-1",
-      "value": "value-1"
+      "value": "value-1",
+      "checked": true
     },
     {
       "key": "key-2",
-      "value": "value-2"
+      "value": "value-2",
+      "checked": false
     },
     {
       "key": "key-3",
-      "value": "value-3"
+      "value": "value-3",
+      "checked": true
     }
   ]
 }
@@ -54,6 +60,10 @@ CheckboxParameter:
 Display Node Path: Specify the node path for the check box to display the content (this format is common to different formats). The root of the node in the file is represented by "//", and the child nodes are separated by "/". The default is: / /CheckboxParameter/key, corresponding to the content selected in the above example: key-1, key-2, key-3, the node path can be customized according to this mode.
 
 Value Node Path: Specify the node path for the check box to select the value (this format is common to different formats). The root of the node in the file is represented by "//", and the child nodes are separated by "/". The default is: / /CheckboxParameter/value, corresponding to the content selected in the above example: value-1, value-2, value-3, the node path can be customized according to this mode.
+
+Checked Node Path: Specify the node path for the initial checked state. The default is `//CheckboxParameter/checked`. When `checked` is present, every checkbox entry must define it as `true` or `false`. Existing configuration files without this node remain supported and start with no checkbox selected.
+
+For a parameter saved in the job configuration, the configured `checked` values are used before the first selection. After a user submits the build form, the previous selection takes precedence, including the case where the user clears every checkbox.
 
 ## Other settings
 
@@ -71,10 +81,13 @@ Configuration file content:
 CheckboxParameter:
   - key: y-1
     value: value-1
+    checked: true
   - key: y-2
     value: value-2
+    checked: false
   - key: y-3
     value: value-3
+    checked: true
 ```
 
 ![project doc image](images/image-04.png)
@@ -129,9 +142,9 @@ pipeline {
     agent any
     parameters {
         checkboxParameter(name: 'Platforms1', format: 'JSON',
-                pipelineSubmitContent: '{"CheckboxParameter": [{"key": "nt","value": "nt"},{"key": "linux","value": "linux"},{"key": "unix","value": "unix"}]}', description: '')
+                pipelineSubmitContent: '{"CheckboxParameter": [{"key": "nt","value": "nt","checked": true},{"key": "linux","value": "linux","checked": false},{"key": "unix","value": "unix","checked": true}]}', description: '')
         checkboxParameter(name: 'Platforms2', format: 'YAML',
-                pipelineSubmitContent: "CheckboxParameter: \n  - key: monday\n    value: monday\n  - key: tuesday\n    value: tuesday\n", description: '')
+                pipelineSubmitContent: "CheckboxParameter: \n  - key: monday\n    value: monday\n    checked: true\n  - key: tuesday\n    value: tuesday\n    checked: false\n", description: '')
     }
     stages {
         stage('Hello') {
@@ -154,6 +167,27 @@ parameter list:
 - format: required, YAML, JSON, default Empty
 - displayNodePath: not required, default //CheckboxParameter/key
 - valueNodePath: not required, default //CheckboxParameter/value 
+- checkedNodePath: not required, default //CheckboxParameter/checked
 - pipelineSubmitContent: required
 
 You can create parameters in the build script, but because each execution of the build script creates a new "Custom Checkbox Parameter" build parameter, the last selected value cannot be retained.
+
+## Jenkins Job Builder
+
+Jenkins Job Builder YAML describes the Jenkins job itself. It is different from the YAML document consumed by this plugin. Jenkins Job Builder does not currently provide a `custom-checkbox` parameter type, so adding a `CheckboxParameter:` section beside `parameters:` is not supported and `jenkins-jobs update` will reject it.
+
+Use Jenkins UI configuration or Declarative Pipeline instead. In Pipeline, pass the checkbox document through `pipelineSubmitContent`:
+
+```groovy
+parameters {
+    checkboxParameter(name: 'Platforms', format: 'YAML',
+            pipelineSubmitContent: '''CheckboxParameter:
+  - key: linux
+    value: linux
+    checked: true
+  - key: windows
+    value: windows
+    checked: false
+''', description: '')
+}
+```
