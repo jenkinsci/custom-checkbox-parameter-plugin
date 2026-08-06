@@ -8,8 +8,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.annotation.CheckForNull;
-
 import com.bluersw.analyze.Configuration;
 import com.bluersw.analyze.ConfigurationFactory;
 import com.bluersw.analyze.Format;
@@ -18,9 +16,9 @@ import com.bluersw.model.Result;
 import com.bluersw.source.DataSource;
 import com.bluersw.source.DataSourceFactory;
 import com.bluersw.source.Protocol;
+import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import edu.umd.cs.findbugs.annotations.Nullable;
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.cli.CLICommand;
 import hudson.model.Job;
@@ -35,7 +33,7 @@ import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.DataBoundSetter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerRequest2;
 
 
 /**
@@ -144,6 +142,10 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		return this.submitContent;
 	}
 
+	public String getPipelineSubmitContent() {
+		return this.submitContent;
+	}
+
 	@DataBoundSetter
 	public void setSubmitContent(String submitContent) {
 		this.submitContent = submitContent;
@@ -176,7 +178,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 	@CheckForNull
 	@Override
 	@SuppressWarnings("rawtypes")
-	public ParameterValue createValue(StaplerRequest staplerRequest, JSONObject jsonObject) {
+	public ParameterValue createValue(StaplerRequest2 staplerRequest, JSONObject jsonObject) {
 		StringBuilder result = new StringBuilder();
 		for (Object o : jsonObject.entrySet()) {
 			Map.Entry entry = (Map.Entry) o;
@@ -199,7 +201,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 
 	@CheckForNull
 	@Override
-	public ParameterValue createValue(StaplerRequest staplerRequest) {
+	public ParameterValue createValue(StaplerRequest2 staplerRequest) {
 		String[] value = staplerRequest.getParameterValues(this.getName());
 		if (value == null || value.length == 0 || (value[0] == null || value[0].trim().isEmpty())) {
 			return this.getDefaultParameterValue();
@@ -222,7 +224,6 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		return new CheckboxParameterValue(this.getName(), this.getDefaultValue());
 	}
 
-	@SuppressFBWarnings(value = "EQ_COMPARETO_USE_OBJECT_EQUALS")
 	@Override
 	public int compareTo(CheckboxParameterDefinition o) {
 		if (o.uuid.equals(this.uuid)) {
@@ -291,7 +292,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		Result<String> fileContent = getFileContent();
 		try {
 			if (!fileContent.isSucceed()) {
-				checkboxList.message = fileContent.getMessage();
+				checkboxList.setMessage(fileContent.getMessage());
 			}
 			else {
 				Configuration config = ConfigurationFactory.createConfiguration(this.format, fileContent.getContent());
@@ -309,8 +310,8 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 		catch (Exception e) {
 			String exMessage = e.getMessage() == null ? e.toString() : e.getMessage();
-			checkboxList.message = String
-					.format("%s: %s", Messages.CheckboxParameterDefinition_CreateCheckboxFailed(), exMessage);
+			checkboxList.setMessage(String
+					.format("%s: %s", Messages.CheckboxParameterDefinition_CreateCheckboxFailed(), exMessage));
 			LOGGER.log(Level.SEVERE, String
 					.format("Failed to create checkbox list,exception info: %s", exMessage));
 		}
@@ -383,7 +384,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 		}
 
 		@Override
-		public ParameterDefinition newInstance(@Nullable StaplerRequest req, @NonNull JSONObject formData) {
+		public ParameterDefinition newInstance(@Nullable StaplerRequest2 req, @NonNull JSONObject formData) {
 			assert req != null;
 			return req.bindJSON(CheckboxParameterDefinition.class,formData);
 		}
@@ -401,7 +402,7 @@ public class CheckboxParameterDefinition extends ParameterDefinition implements 
 			}
 			if (checkboxList == null) {
 				checkboxList = new CheckboxList();
-				checkboxList.message = "Parameter Definition Not Found.";
+				checkboxList.setMessage("Parameter Definition Not Found.");
 			}
 			return checkboxList;
 		}
