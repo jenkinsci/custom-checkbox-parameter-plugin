@@ -88,8 +88,8 @@ public abstract class AbstractFormat implements Configuration {
 			}
 			else {
 				parentName = parentName + entry.getKey().toString();
-				//允许重复的Key但不同的Value，Key+Value是唯一的  Allow duplicate Key but different Value, Key+Value is unique
-				parentName = parentName + "@" + (parentName + "/" + entry.getValue().toString()).hashCode();
+				// Preserve repeated values at the same path in their original order.
+				parentName = parentName + "@" + this.index.size();
 				this.index.put(parentName, entry.getValue().toString());
 			}
 		}

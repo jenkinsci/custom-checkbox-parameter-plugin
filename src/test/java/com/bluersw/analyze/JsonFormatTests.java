@@ -8,6 +8,14 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class JsonFormatTests {
+	@Test
+	public void preservesRepeatedValuesAtTheSamePath() throws Exception {
+		Configuration format = ConfigurationFactory.createConfiguration(Format.JSON,
+				"{\"projects\":[{\"selected\":true},{\"selected\":false},{\"selected\":true}]}");
+
+		assertEquals(List.of("true", "false", "true"),
+				format.getValueListBySearch("//projects/selected"));
+	}
 
 	@Test
 	public void test() throws Exception{
