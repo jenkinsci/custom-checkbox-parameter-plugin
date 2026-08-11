@@ -1,14 +1,14 @@
 package com.bluersw.source;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Locale;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import hudson.ProxyConfiguration;
 
 /**
  * 通过HTTP和HTTPS协议获得响应结果 Get response results through HTTP and HTTPS protocols
@@ -16,7 +16,9 @@ import org.apache.http.util.EntityUtils;
  */
 public class HttpRequest implements DataSource {
 
-	private final String uri;
+	private static final int DEFAULT_TIMEOUT_MILLIS = 30_000;
+	private final URL url;
+	private final int timeoutMillis;
 	private String statusLine;
 	private int statusCode;
 
@@ -25,7 +27,26 @@ public class HttpRequest implements DataSource {
 	 * @param uri 要请求的URI地址 URL
 	 */
 	public HttpRequest(String uri) {
-		this.uri = uri;
+		this(uri, DEFAULT_TIMEOUT_MILLIS);
+	}
+
+	HttpRequest(String uri, int timeoutMillis) {
+		try {
+			URI parsed = URI.create(uri);
+			String scheme = parsed.getScheme() == null ? "" : parsed.getScheme().toLowerCase(Locale.ROOT);
+			if (!("http".equals(scheme) || "https".equals(scheme)) || parsed.getHost() == null) {
+				throw new IllegalArgumentException("URI needs to start with http or https");
+			}
+			if (timeoutMillis <= 0) {
+				throw new IllegalArgumentException("Timeout needs to be greater than zero");
+			}
+			this.url = parsed.toURL();
+			this.timeoutMillis = timeoutMillis;
+		} catch (IllegalArgumentException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new IllegalArgumentException("Invalid HTTP or HTTPS URI", e);
+		}
 	}
 
 	/**
@@ -47,38 +68,28 @@ public class HttpRequest implements DataSource {
 	}
 
 	/**
-	 * 创建CloseableHttpClient对象 Create CloseableHttpClient object
-	 * @return CloseableHttpClient对象 CloseableHttpClient
-	 * @throws Exception 异常 Exception
-	 */
-	private CloseableHttpClient createClientByProtocol() throws Exception {
-		final String http = "http";
-		String lower = this.uri.toLowerCase();
-		if (lower.startsWith(http)) {
-			return HttpClients.createDefault();
-		}else {
-			throw new IllegalArgumentException("URI needs to start with http or https");
-		}
-	}
-
-	/**
 	 * 获得GET请求的响应结果 Get the response result of GET request
 	 * @return 响应结果 Response results
 	 * @throws Exception 异常 Exception
 	 */
 	@Override
 	public String get() throws Exception {
-		try (final CloseableHttpClient client = this.createClientByProtocol()) {
-			HttpGet httpGet = new HttpGet(this.uri);
-			try (final CloseableHttpResponse response = client.execute(httpGet)) {
-				this.statusCode = response.getStatusLine().getStatusCode();
-				this.statusLine = response.getStatusLine().toString();
-				if (this.statusCode == HttpStatus.SC_OK) {
-					return EntityUtils.toString(response.getEntity(), Charset.defaultCharset());
-				}else {
-					throw new IOException("HTTP or HTTPS Get data failed,HttpStatus:" + this.statusLine);
+		HttpURLConnection connection = (HttpURLConnection) ProxyConfiguration.open(this.url);
+		connection.setConnectTimeout(this.timeoutMillis);
+		connection.setReadTimeout(this.timeoutMillis);
+		connection.setInstanceFollowRedirects(true);
+		connection.setRequestMethod("GET");
+		try {
+			this.statusCode = connection.getResponseCode();
+			this.statusLine = connection.getHeaderField(0);
+			if (this.statusCode == HttpURLConnection.HTTP_OK) {
+				try (InputStream input = connection.getInputStream()) {
+					return new String(input.readAllBytes(), Charset.defaultCharset());
 				}
 			}
+			throw new IOException("HTTP or HTTPS Get data failed,HttpStatus:" + this.statusLine);
+		} finally {
+			connection.disconnect();
 		}
 	}
 }
