@@ -75,6 +75,8 @@ After selecting the "Use only the input as the document content" check box, you 
 
 [Configuration file address](https://raw.githubusercontent.com/sunweisheng/Jenkins/master/examples/example.yaml)
 
+Remote HTTP and HTTPS requests use the proxy configured in Jenkins. Connection and read operations time out after 30 seconds so the build form does not wait indefinitely when a source is unavailable.
+
 Configuration file content:
 
 ```yaml
