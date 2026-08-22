@@ -7,6 +7,7 @@ import com.bluersw.analyze.Format;
 import com.bluersw.model.CheckboxList;
 import hudson.model.ParametersDefinitionProperty;
 import net.sf.json.JSONObject;
+import org.htmlunit.html.HtmlPage;
 import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import org.jenkinsci.plugins.structs.describable.UninstantiatedDescribable;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
@@ -62,7 +63,31 @@ public class CheckboxParameterDefinitionTests {
 			assertFalse(jelly.contains("<script"));
 			assertTrue(jelly.contains("data-checkbox-url"));
 			assertTrue(jelly.contains("data-parameter-name"));
+			assertTrue(jelly.contains("escapeEntryTitleAndDescription\" value=\"false"));
+			assertTrue(jelly.contains("title=\"${h.escape(it.name)}\""));
+			assertTrue(jelly.contains("description=\"${it.formattedDescription}\""));
 		}
+	}
+
+	@Test
+	public void testBuildFormEscapesParameterNameAndDescription() throws Exception {
+		String maliciousName = "\"><img id=\"xss-name\" src=\"x\" onerror=\"alert(1)\">";
+		String maliciousDescription = "<img id=\"xss-description\" src=\"x\" onerror=\"alert(1)\">";
+		CheckboxParameterDefinition param = new CheckboxParameterDefinition(
+				maliciousName, maliciousDescription, protocol, Format.JSON, "", "", "", null,
+				"{\"CheckboxParameter\":[{\"key\":\"linux\",\"value\":\"linux\"}]}");
+		WorkflowJob job = jenkins.createProject(WorkflowJob.class, "test-escaped-build-form");
+		job.addProperty(new ParametersDefinitionProperty(param));
+
+		JenkinsRule.WebClient webClient = jenkins.createWebClient();
+		webClient.setThrowExceptionOnFailingStatusCode(false);
+		HtmlPage page = webClient.getPage(job, "build?delay=0sec");
+		String response = page.getWebResponse().getContentAsString();
+
+		assertNull(page.getFirstByXPath("//*[@id='xss-name']"));
+		assertNull(page.getFirstByXPath("//*[@id='xss-description']"));
+		assertTrue(response.contains("&lt;img"));
+		assertFalse(response.contains("<img id=\"xss-"));
 	}
 
 	@Test
