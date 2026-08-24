@@ -2,20 +2,21 @@ package com.bluersw.source;
 
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class FileReadTests {
+class FileReadTests {
 
 	@Test
-	public void get() throws Exception {
+	void get() throws Exception {
 		Properties properties = System.getProperties();
 		String path = properties.getProperty("user.dir");
 		DataSource file = DataSourceFactory.createDataSource(Protocol.FILE_PATH, path + "/src/main/resources/test/analyze/examples.json");
 		String json = file.get();
 		assertNotNull(json);
-		assertEquals(file.getStatusLine(),"Read File Success.StatusCode:200");
-		assertEquals(file.getStatusCode(),200);
+		assertEquals("Read File Success.StatusCode:200", file.getStatusLine());
+		assertEquals(200, file.getStatusCode());
 	}
 }
