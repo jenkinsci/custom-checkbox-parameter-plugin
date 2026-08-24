@@ -3,13 +3,14 @@ package com.bluersw.analyze;
 import java.io.InputStream;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class YamlFormatTests {
+class YamlFormatTests {
+
 	@Test
-	public void preservesRepeatedValuesAtTheSamePath() throws Exception {
+	void preservesRepeatedValuesAtTheSamePath() throws Exception {
 		Configuration format = ConfigurationFactory.createConfiguration(Format.YAML,
 				"projects:\n  - selected: true\n  - selected: false\n  - selected: true\n");
 
@@ -18,7 +19,7 @@ public class YamlFormatTests {
 	}
 
 	@Test
-	public void test() throws Exception{
+	void test() throws Exception{
 		InputStream inputStream = this.getClass()
 				.getClassLoader()
 				.getResourceAsStream("test/analyze/examples.yaml");
@@ -27,42 +28,42 @@ public class YamlFormatTests {
 
 		System.out.println("//arrayOne:");
 		List<String> list = format.getValueListBySearch("//arrayOne");
-		assertEquals(list.size(),3);
+		assertEquals(3, list.size());
 		System.out.println(list);
 
 		System.out.println("//arrayTwo/itemName:");
 		list = format.getValueListBySearch("//arrayTwo/itemName");
-		assertEquals(list.size(),3);
+		assertEquals(3, list.size());
 		System.out.println(list);
 
 		System.out.println("//arrayThree/item/name:");
 		list = format.getValueListBySearch("//arrayThree/item/name");
-		assertEquals(list.size(),4);
+		assertEquals(4, list.size());
 		System.out.println(list);
 
 		System.out.println("//arrayOne/item:");
 		list = format.getValueListBySearch("//arrayOne/item");
-		assertEquals(list.size(),3);
+		assertEquals(3, list.size());
 		System.out.println(list);
 
 		System.out.println("//arrayTwo:");
 		list = format.getValueListBySearch("//arrayTwo");
-		assertEquals(list.size(),6);
+		assertEquals(6, list.size());
 		System.out.println(list);
 
 		System.out.println("//purpose:");
 		list = format.getValueListBySearch("//purpose");
-		assertEquals(list.size(),1);
+		assertEquals(1, list.size());
 		System.out.println(list);
 
 		System.out.println("//SearchExample:");
 		list = format.getValueListBySearch("//SearchExample");
-		assertEquals(list.size(),8);
+		assertEquals(8, list.size());
 		System.out.println(list);
 
 		System.out.println("//arrayThree/item:");
 		list = format.getValueListBySearch("//arrayThree/item");
-		assertEquals(list.size(),8);
+		assertEquals(8, list.size());
 		System.out.println(list);
 	}
 }

@@ -7,20 +7,19 @@ import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 
 import com.sun.net.httpserver.HttpServer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class HttpRequestTests {
+class HttpRequestTests {
+
 	private HttpServer server;
 	private String serverUrl;
 
-	@Before
-	public void setUp() throws IOException {
+	@BeforeEach
+	void setUp() throws IOException {
 		server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
 		server.createContext("/config", exchange -> {
 			byte[] response = "projects: []\n".getBytes(StandardCharsets.UTF_8);
@@ -46,13 +45,13 @@ public class HttpRequestTests {
 		serverUrl = "http://127.0.0.1:" + server.getAddress().getPort();
 	}
 
-	@After
-	public void tearDown() {
+	@AfterEach
+	void tearDown() {
 		server.stop(0);
 	}
 
 	@Test
-	public void getsHttpContent() throws Exception {
+	void getsHttpContent() throws Exception {
 		HttpRequest request = new HttpRequest(serverUrl + "/config");
 
 		assertEquals("projects: []\n", request.get());
@@ -61,12 +60,12 @@ public class HttpRequestTests {
 	}
 
 	@Test
-	public void rejectsUnsupportedProtocols() {
+	void rejectsUnsupportedProtocols() {
 		assertThrows(IllegalArgumentException.class, () -> new HttpRequest("file:///tmp/config.yaml"));
 	}
 
 	@Test
-	public void reportsNonSuccessfulResponses() {
+	void reportsNonSuccessfulResponses() {
 		HttpRequest request = new HttpRequest(serverUrl + "/failure");
 
 		IOException error = assertThrows(IOException.class, request::get);
@@ -75,7 +74,7 @@ public class HttpRequestTests {
 	}
 
 	@Test
-	public void timesOutSlowResponses() {
+	void timesOutSlowResponses() {
 		HttpRequest request = new HttpRequest(serverUrl + "/slow", 50);
 
 		assertThrows(SocketTimeoutException.class, request::get);
